@@ -7,13 +7,15 @@ TODO:
 """
 from os import system, name
 
+EMPTY_PIECE = "."
+
 board = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [".", ".", ".", ".", ".", ".", ".", "."],
-    [".", ".", ".", ".", ".", ".", ".", "."],
-    [".", ".", ".", ".", ".", ".", ".", "."],
-    [".", ".", ".", ".", ".", ".", ".", "."],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
     ["r", "n", "b", "q", "k", "b", "n", "r"],
 ]
@@ -53,7 +55,7 @@ def move_piece():
         return False
 
     from_piece = board[from_row][from_col]
-    board[from_row][from_col] = "."
+    board[from_row][from_col] = EMPTY_PIECE
     board[to_row][to_col] = from_piece
     return True
 
@@ -65,7 +67,7 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
     from_piece = board[from_row][from_col]
     to_piece = board[to_row][to_col]
 
-    if from_piece == ".":
+    if from_piece == EMPTY_PIECE:
         return False
 
     if from_coords == to_coords:
@@ -78,9 +80,9 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
         return False
 
     # Capture opponent's piece
-    if to_piece != "." and player_turn and is_white(to_piece):
+    if to_piece != EMPTY_PIECE and player_turn and is_white(to_piece):
         return False
-    if to_piece != "." and not player_turn and is_black(to_piece):
+    if to_piece != EMPTY_PIECE and not player_turn and is_black(to_piece):
         return False
 
     if from_piece.lower() == "p":  # Piece is a pawn
@@ -121,19 +123,19 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
 
     elif steps == 1:  # Made 1 step
         if from_col != to_col:  # Column changed
-            if to_piece != ".":
+            if to_piece != EMPTY_PIECE:
                 return True
             else:
                 return False
-        if to_piece == ".":
+        if to_piece == EMPTY_PIECE:
             return True
 
     elif steps == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
-            if board[from_row + 1][from_col] == ".":
+            if board[from_row + 1][from_col] == EMPTY_PIECE:
                 return True
         if from_row == 6 and player_turn:
-            if board[from_row - 1][from_col] == ".":
+            if board[from_row - 1][from_col] == EMPTY_PIECE:
                 return True
         return False
     
@@ -149,12 +151,12 @@ def is_legal_rook(from_row, from_col, to_row, to_col):
 
     if from_col != to_col:  # horizontal move
         for piece in board[from_row][min(from_col, to_col)+1: max(from_col, to_col)]:
-            if piece != ".":
+            if piece != EMPTY_PIECE:
                 return False
 
     if from_row != to_row:  # vertical move
         for r in range(min(from_row, to_row)+1, max(from_row, to_row)):
-            if board[r][from_col] != ".":
+            if board[r][from_col] != EMPTY_PIECE:
                 return False
 
     return True
