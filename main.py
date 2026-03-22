@@ -40,13 +40,13 @@ player_turn = True  # True is white, False is black
 
 def display_board(board):
     system('cls' if name == 'nt' else 'clear')  # Clear terminal
-    print(f"+ {"- " * 8}+")
+    print(f"+-{"-" * 16}+")
     for row in range(len(board)):
         print("| ", end="")
         for col in range(len(board[row])):
             print(board[row][col], end=" ")
         print(f"|{row + 1}")
-    print(f"+ {"- " * 8}+")
+    print(f"+-{"-" * 16}+")
     print(f"  {" ".join(str(i) for i in LETTER_TO_INDEX)}")
 
 
