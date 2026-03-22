@@ -171,7 +171,8 @@ def is_legal_king(from_row, from_col, to_row, to_col):
 
 
 def is_legal_queen(from_row, from_col, to_row, to_col):
-    return True
+    return (is_legal_rook(board, from_row, from_col, to_row, to_col) or
+            is_legal_bishop(board, from_row, from_col, to_row, to_col))
 
 
 def is_black(piece):
