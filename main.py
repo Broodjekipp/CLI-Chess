@@ -50,7 +50,7 @@ def is_white(piece):
 
 
 def is_legal_pawn(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
-    if from_col != to_col:
+    if from_col != to_col:  # Column changed
         if to_piece != ".":
             return True
         else:
@@ -64,7 +64,10 @@ def is_legal_pawn(from_coords, to_coords, from_row, from_col, to_row, to_col, to
         return False
 
     elif abs(from_row - to_row) == 1:  # Made 1 step
-        pass
+        if to_piece == ".":
+            return True
+        
+    return False
 
 
 def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
