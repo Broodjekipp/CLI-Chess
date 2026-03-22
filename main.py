@@ -198,6 +198,7 @@ def check_check(board, row, col, player_turn):
     subgrid = [row[col - 2:col + 3] for row in board[row - 2:row + 3]]
     if any(enemy_king in row for row in subgrid):
         return True
+    
     return False
 
 
