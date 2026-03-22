@@ -24,6 +24,7 @@ player_turn = True  # True is white, False is black
 
 
 def display_board():
+    system('cls' if name == 'nt' else 'clear')
     print(f"+ {"- " * 8}+")
     for row in range(len(board)):
         print("| ", end="")
@@ -183,10 +184,6 @@ def check_mate():
 
 def check_check(row, col):
     return False
-
-
-def clear_screen():
-    system('cls' if name == 'nt' else 'clear')
 
 
 while True:
