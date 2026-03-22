@@ -78,7 +78,21 @@ def is_legal_pawn(from_coords, to_coords, from_row, from_col, to_row, to_col, to
 
 
 def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
-    pass
+    if from_col != to_col and from_row != to_row:
+        return False  # moving diagonally
+
+    if from_col != to_col:  # horizontal move
+        for piece in board[from_row][min(from_col, to   _col)+1 : max(from_col, to_col)]:
+            if piece != ".":
+                return False
+
+    if from_row != to_row:  # vertical move
+        for r in range(min(from_row, to_row)+1, max(from_row, to_row)):
+            if board[r][from_col] != ".":
+                return False
+
+    return True
+            
 
 
 def is_legal_knight(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
