@@ -5,7 +5,6 @@ TODO:
 * Add check_mate
 * Add check_check
 """
-from copy import deepcopy
 from os import system, name
 
 board = [
@@ -116,6 +115,7 @@ def is_white(piece):
 def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
     direction = -1 if player_turn else 1
     steps = abs(from_row - to_row)
+
     if to_row != from_row + direction:
         return False
 
