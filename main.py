@@ -39,18 +39,26 @@ def display_board():
     print(f"  {" ".join(str(i + 1) for i in range(len(board)))}")
 
 
-def move_piece():
+def get_move(player_turn):
     move = input(f"{"White" if player_turn else "Black"}'s turn: ")
     try:
         from_coords = [int(move[0])-1, int(move[1])-1]
         to_coords = [int(move[-2])-1, int(move[-1])-1]
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
-        return None
+        return False, None, None
     if not move_is_legal(board, player_turn, from_coords, to_coords):
         input("Illegal move!")
-        return False
+        return False, None, None
+    return from_coords, to_coords
+    
 
+
+def move_piece():
+    success, from_coords, to_coords = get_move(player_turn)
+    if not success:
+        return False
+    
     from_row, from_col = from_coords
     to_row, to_col = to_coords
     if not from_row > 7 or not from_col > 7 or not to_row > 7 or not to_col > 7:
