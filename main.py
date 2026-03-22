@@ -114,7 +114,7 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
     if from_piece.lower() == "q":  # Piece is a queen
         return is_legal_queen(from_row, from_col, to_row, to_col)
 
-    return True
+    return False
 
 
 def is_black(piece):
