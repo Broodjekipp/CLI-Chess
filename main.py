@@ -45,7 +45,7 @@ def display_board(board):
         print("| ", end="")
         for col in range(len(board[row])):
             print(board[row][col], end=" ")
-        print(f"|{row + 1}")
+        print(f"|{8 - row}")
     print(f"+-{"-" * 16}+")
     print(f"  {" ".join(str(i) for i in LETTER_TO_INDEX)}")
 
@@ -53,9 +53,11 @@ def display_board(board):
 def get_move(player_turn):
     move = input(
         f"{"White" if player_turn else "Black"}'s turn: ").lower().strip()
+    if move == "exit":
+        exit()
     try:
-        from_col, from_row = [LETTER_TO_INDEX[move[0]], int(move[1])-1]
-        to_col, to_row = [LETTER_TO_INDEX[move[-2]], int(move[-1])-1]
+        from_col, from_row = [LETTER_TO_INDEX[move[0]], 8 - int(move[1])]
+        to_col, to_row = [LETTER_TO_INDEX[move[-2]], 8 - int(move[-1])]
     except (ValueError, IndexError, KeyError):
         input("Invalid notation!")
         return False, None, None, None, None
