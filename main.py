@@ -38,11 +38,12 @@ def move_piece():
     if not move_is_legal(from_coords, to_coords):
         print("Illegal move!")
         return False
-
+        
     from_row, from_col = from_coords
     to_row, to_col = to_coords
-    board[to_row][to_col] = board[from_col][from_row]
-    board[from_col][from_row] = "."
+    from_piece = board[from_row][from_col]
+    board[from_row][from_col] = "."
+    board[to_row][to_col] = from_piece
     return True
 
 
