@@ -92,22 +92,22 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         return False
 
     # Piece-specific legality tests
-    if from_piece.lower() == "p":  # Piece is a pawn
+    if from_piece.lower() == "p":  # Pawn
         return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
 
-    if from_piece.lower() == "r":  # Piece is a rook
+    if from_piece.lower() == "r":  # Rook
         return is_legal_rook(from_row, from_col, to_row, to_col)
 
-    if from_piece.lower() == "n":  # Piece is a knight
+    if from_piece.lower() == "n":  # Knight
         return is_legal_knight(from_row, from_col, to_row, to_col)
 
-    if from_piece.lower() == "b":  # Piece is a bishop
+    if from_piece.lower() == "b":  # Bishop
         return is_legal_bishop(from_row, from_col, to_row, to_col)
 
-    if from_piece.lower() == "k":  # Piece is a king
+    if from_piece.lower() == "k":  # King
         return is_legal_king(from_row, from_col, to_row, to_col)
 
-    if from_piece.lower() == "q":  # Piece is a queen
+    if from_piece.lower() == "q":  # Queen
         return is_legal_queen(from_row, from_col, to_row, to_col)
 
     return False
