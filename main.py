@@ -77,8 +77,12 @@ def move_is_legal(from_coords, to_coords):
                 return True
             else:
                 return False
-        elif abs(from_row - to_row) == 2:
-            if from_row == 2 and player_turn
+        elif abs(from_row - to_row) == 2: # Made 2 steps
+            if from_row == 1 and not player_turn: 
+                return True
+            if from_row == 6 and player_turn:
+                return True
+
 
 
     if from_piece.lower() == "r": # Piece is a rook
