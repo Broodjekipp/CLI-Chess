@@ -4,6 +4,7 @@ TODO:
 * Add queen moving logic
 * Add check_mate
 * Add check_check
+* Add en passant
 """
 from os import system, name
 
@@ -61,6 +62,9 @@ def get_move(player_turn):
 
 def move_piece(board):
     success, from_row, from_col, to_row, to_col = get_move(player_turn)
+
+    if board[to_row][to_col].lower() == "p" and to_row in (0, 7):  # Pawn promotion
+        board[to_row][to_col] = "q" if player_turn else "Q" 
 
     if not success:
         return False
