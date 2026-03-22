@@ -232,7 +232,7 @@ def king_can_escape(board, r, c, player_turn):
 
 
 def check_mate(board, player_turn):
-    for r, c in find_kings(board):  # Find the kings in the game
+    for r, c in find_kings(board):
         king_is_white = is_white(board[r][c])
         if king_is_white != player_turn:
             continue
