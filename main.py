@@ -200,13 +200,26 @@ def is_white(piece):
 
 
 def check_mate(board, player_turn):
+    
     for r in range(len(board)):
         for c in range(len(board[r])):
-            if board[r][c].lower() == "k":
-                king_checked, attack_r, attack_c = check_check(board, r, c, player_turn)
+            if board[r][c].lower() == "k":  # Find the kings in the game
+                king_is_white = is_white(board[r][c])
+                king_checked, attack_r, attack_c = check_check(board, r, c, king_is_white)
                 if king_checked:
-                    if check_check(board, attack_r, attack_c, not player_turn):
+                    
+                    attack_possible, defend_r, defend_c = check_check(board, attack_r, attack_c, not king_is_white)
+                    if attack_possible:
                         return False, None
+                    
+                    for to_r in range(len(board)):
+                        for to_c in range(len(board[r])):
+                            if is_legal_king(board, r, c, to_r, to_c, player_turn):
+                                unsafe, defend_r, defend_c = check_check(board, to_r, to_c, player_turn)
+                                if not unsafe:
+                                    return False, None
+                                else:
+                                    return True, king_is_white
                     
     return False, None
 
