@@ -99,8 +99,12 @@ def is_legal_rook(from_row, from_col, to_row, to_col):
     return True
 
 
-def is_legal_knight(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
-    pass
+def is_legal_knight(from_row, from_col, to_row, to_col):
+    row_diff = abs(from_row - to_row)
+    col_diff = abs(from_col - to_col)
+    if (row_diff == 2 and col_diff == 1) or (row_diff == 1 and col_diff == 2):
+        return True
+    return False
 
 
 def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
