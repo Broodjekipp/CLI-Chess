@@ -16,7 +16,7 @@ start_board = [
     [".", ".", ".", ".", ".", ".", ".", "."],
     [".", ".", ".", ".", ".", ".", ".", "."],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
-    ["r", "n", "b", "k", "q", "b", "n", "r"],
+    ["r", "n", "b", "q", "k", "b", "n", "r"],
 ]
 
 board = deepcopy(start_board)
@@ -73,14 +73,14 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
     if player_turn and to_row >= from_row:  # white must move up
         return False
     if not player_turn and to_row <= from_row:  # black must move down
-        return False
+        return False    
 
     elif abs(from_row - to_row) == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
-            if board[from_col][from_row + 1] == ".":
+            if board[from_row + 1][from_col] == ".":
                 return True
         if from_row == 6 and player_turn:
-            if board[from_col][from_row - 1] == ".":
+            if board[from_row - 1][from_col] == ".":
                 return True
         return False
 
