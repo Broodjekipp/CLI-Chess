@@ -100,15 +100,15 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
     if from_piece.lower() == "p":  # Pawn
         return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn)
     if from_piece.lower() == "r":  # Rook
-        return is_legal_rook(from_row, from_col, to_row, to_col)
+        return is_legal_rook(board, from_row, from_col, to_row, to_col)
     if from_piece.lower() == "n":  # Knight
         return is_legal_knight(from_row, from_col, to_row, to_col)
     if from_piece.lower() == "b":  # Bishop
-        return is_legal_bishop(from_row, from_col, to_row, to_col)
+        return is_legal_bishop(board, from_row, from_col, to_row, to_col)
     if from_piece.lower() == "k":  # King
-        return is_legal_king(from_row, from_col, to_row, to_col)
+        return is_legal_king(board, from_row, from_col, to_row, to_col, player_turn)
     if from_piece.lower() == "q":  # Queen
-        return is_legal_queen(from_row, from_col, to_row, to_col)
+        return is_legal_queen(board, from_row, from_col, to_row, to_col)
 
     return False
 
@@ -131,7 +131,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn):
     return False
 
 
-def is_legal_rook(from_row, from_col, to_row, to_col):
+def is_legal_rook(board, from_row, from_col, to_row, to_col):
     if from_col != to_col and from_row != to_row:
         return False  # moving diagonally
 
@@ -156,19 +156,19 @@ def is_legal_knight(from_row, from_col, to_row, to_col):
     return False
 
 
-def is_legal_bishop(from_row, from_col, to_row, to_col):
+def is_legal_bishop(board, from_row, from_col, to_row, to_col):
     return True
 
 
-def is_legal_king(from_row, from_col, to_row, to_col):
+def is_legal_king(board, from_row, from_col, to_row, to_col, player_turn):
     if abs(from_row - to_row) > 1 or abs(from_col - to_col) > 1:
         return False
-    if check_check(to_row, to_col):
+    if check_check(board, to_row, to_col, player_turn):
         return False
     return True
 
 
-def is_legal_queen(from_row, from_col, to_row, to_col):
+def is_legal_queen(board, from_row, from_col, to_row, to_col):
     return (is_legal_rook(board, from_row, from_col, to_row, to_col) or
             is_legal_bishop(board, from_row, from_col, to_row, to_col))
 
@@ -185,8 +185,10 @@ def check_mate():
     pass
 
 
-def check_check(row, col):
-    return False
+def check_check(board, row, col, player_turn):
+    for r in range(len(board)):
+        for c in range(len(board[r])):
+            move_is_legal(board, player_turn, r, c, row, col)
 
 
 while True:
