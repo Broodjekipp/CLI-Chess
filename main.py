@@ -41,8 +41,8 @@ def move_piece():
 
     from_col, from_row = from_coords
     to_col, to_row = to_coords
+    board[to_row][to_col] = board[from_col][from_row]
     board[from_col][from_row] = "."
-    board[to_row][to_col] = f"{"p" if player_turn else "P"}"
     return True
 
 
@@ -165,7 +165,7 @@ def check_mate():
 
 
 def check_check(row, col):
-    pass
+    return False
 
 
 while True:
