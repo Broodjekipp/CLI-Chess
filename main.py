@@ -2,11 +2,23 @@
 TODO:
 * Add check_mate
 * Add en passant
+* Add choose menu
+* Castling
 board[king_row - 2:king_row + 3][king_col - 2:king_col + 3]
 """
 from os import system, name
 
 EMPTY_PIECE = "."
+LETTER_TO_INDEX = {
+    "a":0,
+    "b":1,
+    "c":2,
+    "d":3,
+    "e":4,
+    "f":5,
+    "g":6,
+    "h":7,
+}
 
 board = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
@@ -41,8 +53,8 @@ def display_board(board):
 def get_move(player_turn):
     move = input(f"{"White" if player_turn else "Black"}'s turn: ")
     try:
-        from_row, from_col = [int(move[0])-1, int(move[1])-1]
-        to_row, to_col = [int(move[-2])-1, int(move[-1])-1]
+        from_col, from_row = [int(move[0])-1, int(move[1])-1]
+        to_col, to_row = [int(move[-2])-1, int(move[-1])-1]
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
