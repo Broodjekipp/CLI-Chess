@@ -103,7 +103,13 @@ def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, 
 
 
 def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
-    pass
+    if not abs(from_row - to_row) == 1:
+        return False
+    if not abs(from_col - to_col) == 1:
+        return False
+    if check_check(to_row, to_col):
+        return True
+    return False
 
 
 def is_legal_queen(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
@@ -160,7 +166,7 @@ def check_mate():
     pass
 
 
-def check_check():
+def check_check(row, col):
     pass
 
 
