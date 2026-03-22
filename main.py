@@ -38,7 +38,7 @@ def move_piece():
     if not move_is_legal(from_coords, to_coords):
         print("Illegal move!")
         return False
-        
+
     from_row, from_col = from_coords
     to_row, to_col = to_coords
     from_piece = board[from_row][from_col]
@@ -61,7 +61,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             return True
         else:
             return False
-        
+
     if player_turn and to_row >= from_row:  # white must move up
         return False
     if not player_turn and to_row <= from_row:  # black must move down
@@ -153,8 +153,7 @@ def move_is_legal(from_coords, to_coords):
         return is_legal_rook(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "n":  # Piece is a knight
-        return is_legal_knight(from_coords, to_coords, from_row,
-                               from_col, to_row, to_col, to_piece)
+        return is_legal_knight(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "b":  # Piece is a bishop
         return is_legal_bishop(from_coords, to_coords, from_row,
