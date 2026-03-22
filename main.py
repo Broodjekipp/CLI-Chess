@@ -1,7 +1,6 @@
 """
 TODO:
 * Add bishop moving logic
-* Add queen moving logic
 * Add check_mate
 * Add check_check
 * Add en passant
@@ -100,19 +99,14 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
     # Piece-specific legality tests
     if from_piece.lower() == "p":  # Pawn
         return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn)
-
     if from_piece.lower() == "r":  # Rook
         return is_legal_rook(from_row, from_col, to_row, to_col)
-
     if from_piece.lower() == "n":  # Knight
         return is_legal_knight(from_row, from_col, to_row, to_col)
-
     if from_piece.lower() == "b":  # Bishop
         return is_legal_bishop(from_row, from_col, to_row, to_col)
-
     if from_piece.lower() == "k":  # King
         return is_legal_king(from_row, from_col, to_row, to_col)
-
     if from_piece.lower() == "q":  # Queen
         return is_legal_queen(from_row, from_col, to_row, to_col)
 
