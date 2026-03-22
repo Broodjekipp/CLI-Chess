@@ -102,7 +102,7 @@ def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, 
     pass
 
 
-def is_legal_king(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
+def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
     pass
 
 
@@ -147,8 +147,7 @@ def move_is_legal(from_coords, to_coords):
                                from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "k":  # Piece is a king
-        return is_legal_king(from_coords, to_coords, from_row,
-                             from_col, to_row, to_col, to_piece)
+        return is_legal_king(from_row, from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "q":  # Piece is a queen
         return is_legal_queen(from_coords, to_coords, from_row,
