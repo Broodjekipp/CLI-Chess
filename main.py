@@ -103,9 +103,7 @@ def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, 
 
 
 def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
-    if not abs(from_row - to_row) == 1:
-        return False
-    if not abs(from_col - to_col) == 1:
+    if abs(from_row - to_row) > 1 or abs(from_col - to_col) > 1:
         return False
     if check_check(to_row, to_col):
         return False
