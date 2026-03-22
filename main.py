@@ -214,13 +214,12 @@ def check_mate(board, player_turn):
                     
                     for to_r in range(len(board)):
                         for to_c in range(len(board[r])):
-                            if is_legal_king(board, r, c, to_r, to_c, player_turn):
+                            if is_legal_king(board, r, c, to_r, to_c, player_turn):  # Check every square if it's legal
                                 unsafe, defend_r, defend_c = check_check(board, to_r, to_c, player_turn)
                                 if not unsafe:
                                     return False, None
                                 else:
                                     return True, king_is_white
-                    
     return False, None
 
 
