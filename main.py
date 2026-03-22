@@ -47,15 +47,15 @@ def get_move(player_turn):
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
-    
+
     if not (0 <= from_row < 8 and 0 <= from_col < 8 and 0 <= to_row < 8 and 0 <= to_col < 8):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
-    
+
     if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         input("Illegal move!")
         return False, None, None, None, None
-    
+
     return True, from_row, from_col, to_row, to_col
 
 
@@ -115,41 +115,20 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
     return False
 
 
-def is_black(piece):
-    return piece.isupper()
-
-
-def is_white(piece):
-    return piece.islower()
-
-
 def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn):
     direction = -1 if player_turn else 1
-    steps = abs(from_row - to_row)
-    same_col = (from_col == to_col)
+    start_row = 6 if player_turn else 1
 
-    if to_row != from_row + direction:
-        return False
-        
-    if same_col:
-        if steps == 1:
-            if to_piece == EMPTY_PIECE:
+    if from_col == to_row:
+        if to_row == from_row + direction and to_piece == EMPTY_PIECE:
+            return True
+        if from_row == start_row and to_row == from_row + 2 * direction:
+            if to_piece == EMPTY_PIECE and board[from_row + direction][from_col] == EMPTY_PIECE:
                 return True
 
-        elif steps == 2:
-            if from_row == 1 and not player_turn:
-                if board[from_row + 1][from_col] == EMPTY_PIECE:
-                    return True
-            if from_row == 6 and player_turn:
-                if board[from_row - 1][from_col] == EMPTY_PIECE:
-                    return True
-            return False
-    
-    else:
-        if to_piece != EMPTY_PIECE and steps == 1:
+    elif abs(from_col - to_col) == 1 and to_row == from_row + direction:
+        if to_piece != EMPTY_PIECE:
             return True
-        else:
-            return False
 
     return False
 
@@ -193,6 +172,14 @@ def is_legal_king(from_row, from_col, to_row, to_col):
 
 def is_legal_queen(from_row, from_col, to_row, to_col):
     return True
+
+
+def is_black(piece):
+    return piece.isupper()
+
+
+def is_white(piece):
+    return piece.islower()
 
 
 def check_mate():
