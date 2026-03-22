@@ -40,7 +40,6 @@ def display_board():
 
 
 def move_piece():
-    # Format is 42 44
     move = input(f"{"White" if player_turn else "Black"}'s turn: ")
     try:
         from_coords = [int(move[0])-1, int(move[1])-1]
