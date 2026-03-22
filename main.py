@@ -63,9 +63,11 @@ def is_legal_pawn(from_coords, to_coords, from_row, from_col, to_row, to_col, to
 
     elif abs(from_row - to_row) == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
-            return True
+            if board[from_col][from_row + 1] == ".":
+                return True
         if from_row == 6 and player_turn:
-            return True
+            if board[from_col][from_row - 1] == ".":
+                return True
         return False
 
     elif abs(from_row - to_row) == 1:  # Made 1 step
