@@ -105,7 +105,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, includ
     if not player_turn and not is_black(from_piece):
         return False
 
-    # Capture opponent's piece
+    # Capture opponent's piece - to be changed for castling
     if to_piece != EMPTY_PIECE and player_turn and is_white(to_piece):
         return False
     if to_piece != EMPTY_PIECE and not player_turn and is_black(to_piece):
