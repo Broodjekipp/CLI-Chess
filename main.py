@@ -35,10 +35,15 @@ def move_piece():
     except (ValueError, IndexError):
         print("Invalid notation! Format: 42 44")
         return None
-    if move_is_legal(from_coords, to_coords):
-        pass
-    else:
+    if not move_is_legal(from_coords, to_coords):
         print("Illegal move!")
+        return False
+    
+    from_col, from_row = from_coords
+    to_col, to_row = to_coords
+    board[from_col][from_row] = "."
+    board[to_row][to_col] = f"{"p" if player_turn else "P"}"
+    return True
 
 
 def is_black(piece):
@@ -145,6 +150,8 @@ def check_mate():
 
 while True:
     display_board()
-    move_piece()
-    check_mate()
-    player_turn = not player_turn
+    if move_piece():
+        check_mate()
+        player_turn = not player_turn
+    else:
+        continue
