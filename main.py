@@ -144,3 +144,4 @@ while True:
     display_board()
     move_piece()
     check_mate()
+    player_turn = not player_turn
