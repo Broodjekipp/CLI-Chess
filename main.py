@@ -12,10 +12,14 @@ EMPTY_PIECE = "."
 board = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
+        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
+        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
+        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
+    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
+        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
     ["p", "p", "p", "p", "p", "p", "p", "p"],
     ["r", "n", "b", "q", "k", "b", "n", "r"],
 ]
@@ -24,7 +28,7 @@ player_turn = True  # True is white, False is black
 
 
 def display_board():
-    system('cls' if name == 'nt' else 'clear')
+    system('cls' if name == 'nt' else 'clear')  # Clear terminal
     print(f"+ {"- " * 8}+")
     for row in range(len(board)):
         print("| ", end="")
@@ -138,7 +142,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             if board[from_row - 1][from_col] == EMPTY_PIECE:
                 return True
         return False
-    
+
     elif steps > 2:
         return False
 
