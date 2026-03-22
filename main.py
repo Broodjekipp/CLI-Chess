@@ -71,6 +71,31 @@ def move_is_legal(from_coords, to_coords):
     if to_piece != "." and not player_turn and is_black(to_piece):
         return False
 
+    if from_piece.lower() == "p": # Piece is a pawn
+        if from_col != to_col:
+            if to_piece != ".":
+                return True
+            else:
+                return False
+        if abs(from_row - to_row) == 2:
+            pass
+
+
+    if from_piece.lower() == "r": # Piece is a rook
+        pass
+
+    if from_piece.lower() == "n": # Piece is a knight
+        pass
+
+    if from_piece.lower() == "b": # Piece is a bishop
+        pass
+
+    if from_piece.lower() == "k": # Piece is a king
+        pass
+
+    if from_piece.lower() == "q": # Piece is a queen
+        pass
+
     return True
 
 
