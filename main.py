@@ -50,6 +50,10 @@ def move_piece():
 
     from_row, from_col = from_coords
     to_row, to_col = to_coords
+    if not from_row > 7 or not from_col > 7 or not to_row > 7 or not to_col > 7:
+        input("Invalid notation! Format: 42 44")
+        return False
+
     from_piece = board[from_row][from_col]
     board[from_row][from_col] = "."
     board[to_row][to_col] = from_piece
@@ -71,9 +75,8 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
         else:
             return False
 
-    if player_turn and to_row >= from_row:  # white must move up
-        return False
-    if not player_turn and to_row <= from_row:  # black must move down
+    direction = -1 if player_turn else 1
+    if to_row != from_row + direction:
         return False
 
     elif abs(from_row - to_row) == 2:  # Made 2 steps
