@@ -96,6 +96,7 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
     if to_piece != EMPTY_PIECE and not player_turn and is_black(to_piece):
         return False
 
+    # Piece-specific legality tests
     if from_piece.lower() == "p":  # Piece is a pawn
         return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
 
@@ -128,12 +129,13 @@ def is_white(piece):
 def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
     direction = -1 if player_turn else 1
     steps = abs(from_row - to_row)
+    same_col = (from_col == to_col)
 
     if to_row != from_row + direction:
         return False
 
     elif steps == 1:  # Made 1 step
-        if from_col != to_col:  # Column changed
+        if not same_col: 
             if to_piece != EMPTY_PIECE:
                 return True
             else:
@@ -142,6 +144,8 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             return True
 
     elif steps == 2:  # Made 2 steps
+        if not same_col: 
+            return False
         if from_row == 1 and not player_turn:
             if board[from_row + 1][from_col] == EMPTY_PIECE:
                 return True
