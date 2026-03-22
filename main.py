@@ -195,7 +195,7 @@ def check_check(board, row, col, player_turn):
                 return True
     
     enemy_king = "K" if player_turn else "k"
-    subgrid = [row[to_col - 2:to_col + 3] for row in board[to_row - 2:to_row + 3]]
+    subgrid = [row[col - 2:col + 3] for row in board[row - 2:row + 3]]
     if any(enemy_king in row for row in subgrid):
         return True
     return False
