@@ -8,7 +8,7 @@ TODO:
 """
 from os import system, name
 
-EMPTY_PIECE = "."
+EMPTY_PIECE = "-"
 LETTER_TO_INDEX = {
     "a": 0,
     "b": 1,
