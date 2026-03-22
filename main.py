@@ -4,6 +4,7 @@ TODO:
 * Add check_mate
 * Add check_check
 * Add en passant
+board[king_row - 2:king_row + 3][king_col - 2:king_col + 3]
 """
 from os import system, name
 
@@ -71,7 +72,7 @@ def move_piece(board):
 
     if board[to_row][to_col].lower() == "p" and to_row in (0, 7):  # Pawn promotion
         board[to_row][to_col] = "q" if player_turn else "Q"
-        
+
     return True
 
 
@@ -99,7 +100,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, includ
 
     # Piece-specific legality tests
     if from_piece.lower() == "p":  # Pawn
-        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn)
+        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn, board)
     if from_piece.lower() == "r":  # Rook
         return is_legal_rook(board, from_row, from_col, to_row, to_col)
     if from_piece.lower() == "n":  # Knight
@@ -114,7 +115,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, includ
     return False
 
 
-def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn):
+def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn, board):
     direction = -1 if player_turn else 1
     start_row = 6 if player_turn else 1
 
@@ -166,6 +167,7 @@ def is_legal_king(board, from_row, from_col, to_row, to_col, player_turn):
         return False
     if check_check(board, to_row, to_col, player_turn):
         return False
+
     return True
 
 
@@ -189,7 +191,14 @@ def check_mate():
 def check_check(board, row, col, player_turn):
     for r in range(len(board)):
         for c in range(len(board[r])):
-            move_is_legal(board, player_turn, r, c, row, col, False)
+            if  move_is_legal(board, player_turn, r, c, row, col, False):
+                return True
+    
+    enemy_king = "K" if player_turn else "k"
+    subgrid = [row[to_col - 2:to_col + 3] for row in board[to_row - 2:to_row + 3]]
+    if any(enemy_king in row for row in subgrid):
+        return True
+    return False
 
 
 while True:
