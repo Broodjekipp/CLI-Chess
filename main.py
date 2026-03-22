@@ -159,6 +159,23 @@ def is_legal_knight(from_row, from_col, to_row, to_col):
 
 
 def is_legal_bishop(board, from_row, from_col, to_row, to_col):
+    row_diff = abs(from_row - to_row)
+    col_diff = abs(from_col - to_col)
+
+    if row_diff != col_diff:
+        return False
+    
+    row_step = 1 if to_row > from_row else -1
+    col_step = 1 if to_col > from_col else -1
+
+
+    r, c = from_row + row_step, from_col + col_step
+    while (r, c) != (to_row, to_col):
+        if board[r][c] != EMPTY_PIECE:
+            return False
+        r += row_step
+        c += col_step
+
     return True
 
 
@@ -188,17 +205,17 @@ def check_mate():
     pass
 
 
-def check_check(board, row, col, player_turn):
+def check_check(board, target_row, target_col, player_turn):
     for r in range(len(board)):
         for c in range(len(board[r])):
-            if  move_is_legal(board, player_turn, r, c, row, col, False):
+            if move_is_legal(board, not player_turn, r, c, target_row, target_col, False):
                 return True
-    
+
     enemy_king = "K" if player_turn else "k"
-    subgrid = [row[col - 2:col + 3] for row in board[row - 2:row + 3]]
-    if any(enemy_king in row for row in subgrid):
+    subgrid = [r[target_col - 1:target_col + 2] for r in board[target_row - 1:target_row + 2]]
+    if any(enemy_king in r for r in subgrid):
         return True
-    
+
     return False
 
 
