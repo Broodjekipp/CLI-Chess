@@ -38,7 +38,7 @@ def move_piece():
     if not move_is_legal(from_coords, to_coords):
         print("Illegal move!")
         return False
-    
+
     from_col, from_row = from_coords
     to_col, to_row = to_coords
     board[from_col][from_row] = "."
@@ -73,7 +73,7 @@ def is_legal_pawn(from_coords, to_coords, from_row, from_col, to_row, to_col, to
     elif abs(from_row - to_row) == 1:  # Made 1 step
         if to_piece == ".":
             return True
-        
+
     return False
 
 
@@ -82,7 +82,7 @@ def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to
         return False  # moving diagonally
 
     if from_col != to_col:  # horizontal move
-        for piece in board[from_row][min(from_col, to_col)+1 : max(from_col, to_col)]:
+        for piece in board[from_row][min(from_col, to_col)+1: max(from_col, to_col)]:
             if piece != ".":
                 return False
 
@@ -92,7 +92,6 @@ def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to
                 return False
 
     return True
-            
 
 
 def is_legal_knight(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
@@ -135,32 +134,36 @@ def move_is_legal(from_coords, to_coords):
 
     if from_piece.lower() == "p":  # Piece is a pawn
         return is_legal_pawn(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                             from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "r":  # Piece is a rook
         return is_legal_rook(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                             from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "n":  # Piece is a knight
         return is_legal_knight(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                               from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "b":  # Piece is a bishop
         return is_legal_bishop(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                               from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "k":  # Piece is a king
         return is_legal_king(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                             from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "q":  # Piece is a queen
         return is_legal_queen(from_coords, to_coords, from_row,
-                      from_col, to_row, to_col, to_piece)
+                              from_col, to_row, to_col, to_piece)
 
     return True
 
 
 def check_mate():
+    pass
+
+
+def check_check():
     pass
 
 
