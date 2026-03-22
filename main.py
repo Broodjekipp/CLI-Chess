@@ -31,8 +31,8 @@ def move_piece():
     move = input(f"{"White" if player_turn else "Black"}'s turn: ")
     try:
         from_coords = [int(move[0])-1, int(move[1])-1]
-        to_coords = [int(move[-1])-1, int(move[-2])-1]
-    except:
+        to_coords = [int(move[-2])-1, int(move[-1])-1]
+    except (ValueError, IndexError):
         print("Invalid notation! Format: 42 44")
         return None
     if move_is_legal(from_coords, to_coords):
