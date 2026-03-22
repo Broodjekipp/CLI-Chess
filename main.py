@@ -3,9 +3,9 @@ TODO:
 * In check_mate 
     * Add a "simulated move" for better accuracy
     * Add blocking
+* Add castling
 * Add en passant
 * Add promotion choose menu
-* Add castling
 * Add standard chess notation
 * In king_can_escape check only for 8 squares around the king instead of whole board
 * Move history
