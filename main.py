@@ -10,14 +10,14 @@ from os import system, name
 
 EMPTY_PIECE = "."
 LETTER_TO_INDEX = {
-    "a":0,
-    "b":1,
-    "c":2,
-    "d":3,
-    "e":4,
-    "f":5,
-    "g":6,
-    "h":7,
+    "a": 0,
+    "b": 1,
+    "c": 2,
+    "d": 3,
+    "e": 4,
+    "f": 5,
+    "g": 6,
+    "h": 7,
 }
 
 board = [
@@ -47,20 +47,21 @@ def display_board(board):
             print(board[row][col], end=" ")
         print(f"|{row + 1}")
     print(f"+ {"- " * 8}+")
-    print(f"  {" ".join(str(i + 1) for i in range(len(board)))}")
+    print(f"  {" ".join(str(i) for i in LETTER_TO_INDEX)}")
 
 
 def get_move(player_turn):
-    move = input(f"{"White" if player_turn else "Black"}'s turn: ")
+    move = input(
+        f"{"White" if player_turn else "Black"}'s turn: ").lower().strip()
     try:
-        from_col, from_row = [int(move[0])-1, int(move[1])-1]
-        to_col, to_row = [int(move[-2])-1, int(move[-1])-1]
-    except (ValueError, IndexError):
-        input("Invalid notation! Format: 42 44")
+        from_col, from_row = [LETTER_TO_INDEX[move[0]], int(move[1])-1]
+        to_col, to_row = [LETTER_TO_INDEX[move[-2]], int(move[-1])-1]
+    except (ValueError, IndexError, KeyError):
+        input("Invalid notation!")
         return False, None, None, None, None
 
     if not (0 <= from_row < 8 and 0 <= from_col < 8 and 0 <= to_row < 8 and 0 <= to_col < 8):
-        input("Invalid notation! Format: 42 44")
+        input("Invalid notation!")
         return False, None, None, None, None
 
     if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, True):
@@ -174,10 +175,9 @@ def is_legal_bishop(board, from_row, from_col, to_row, to_col):
 
     if row_diff != col_diff:
         return False
-    
+
     row_step = 1 if to_row > from_row else -1
     col_step = 1 if to_col > from_col else -1
-
 
     r, c = from_row + row_step, from_col + col_step
     while (r, c) != (to_row, to_col):
@@ -211,27 +211,42 @@ def is_white(piece):
     return piece.islower()
 
 
+def find_kings(board):
+    return [
+        (r, c)
+        for r in range(len(board))
+        for c in range(len(board[r]))
+        if board[r][c].lower() == "k"
+    ]
+
+
+def king_can_escape(board, r, c, player_turn):
+    return any(
+        not check_check(board, to_r, to_c, player_turn)[0]
+        for to_r in range(len(board))
+        for to_c in range(len(board[to_r]))
+        if is_legal_king(board, r, c, to_r, to_c, player_turn)
+    )
+
+
 def check_mate(board, player_turn):
-    
-    for r in range(len(board)):
-        for c in range(len(board[r])):
-            if board[r][c].lower() == "k":  # Find the kings in the game
-                king_is_white = is_white(board[r][c])
-                king_checked, attack_r, attack_c = check_check(board, r, c, king_is_white)
-                if king_checked:
-                    
-                    attack_possible, defend_r, defend_c = check_check(board, attack_r, attack_c, not king_is_white)
-                    if attack_possible:
-                        return False, None
-                    
-                    for to_r in range(len(board)):
-                        for to_c in range(len(board[r])):
-                            if is_legal_king(board, r, c, to_r, to_c, player_turn):  # Check every square if it's legal
-                                unsafe, defend_r, defend_c = check_check(board, to_r, to_c, player_turn)
-                                if not unsafe:
-                                    return False, None
-                                else:
-                                    return True, king_is_white
+    for r, c in find_kings(board):  # Find the kings in the game
+        king_is_white = is_white(board[r][c])
+        king_checked, attacker_row, attacker_col = check_check(
+            board, r, c, king_is_white)
+
+        if not king_checked:
+            continue
+
+        attacker_defended, *_ = check_check(board, attacker_row,
+                            attacker_col, not king_is_white)
+        if attacker_defended:
+            return False, None
+        
+        if king_can_escape(board, r, c, player_turn):
+            return False, None
+        
+        return True, king_is_white
     return False, None
 
 
@@ -242,7 +257,8 @@ def check_check(board, target_row, target_col, player_piece):
                 return True, r, c
 
     enemy_king = "K" if player_piece else "k"
-    subgrid = [r[target_col - 1:target_col + 2] for r in board[target_row - 1:target_row + 2]]
+    subgrid = [r[target_col - 1:target_col + 2]
+               for r in board[target_row - 1:target_row + 2]]
     if any(enemy_king in r for r in subgrid):
         return True, None, None
 
