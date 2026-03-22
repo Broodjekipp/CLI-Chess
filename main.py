@@ -1,10 +1,15 @@
 """
 TODO:
-* Add check_mate
+* In check_mate 
+    * Add a "simulated move" for better accuracy
+    * Add blocking
 * Add en passant
 * Add promotion choose menu
 * Add castling
 * Add standard chess notation
+* In king_can_escape check only for 8 squares around the king
+* Move history
+* AI
 """
 from os import system, name
 
@@ -270,7 +275,7 @@ def check_check(board, target_row, target_col, player_piece):
 
 
 def player_win(winner):
-    pass
+    input(f"{"White" if winner else "Black"} won the match!")
 
 
 while True:
