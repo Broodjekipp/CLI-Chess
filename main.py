@@ -52,7 +52,7 @@ def get_move(player_turn):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
 
-    if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
+    if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, True):
         input("Illegal move!")
         return False, None, None, None, None
 
@@ -62,19 +62,20 @@ def get_move(player_turn):
 def move_piece(board):
     success, from_row, from_col, to_row, to_col = get_move(player_turn)
 
-    if board[to_row][to_col].lower() == "p" and to_row in (0, 7):  # Pawn promotion
-        board[to_row][to_col] = "q" if player_turn else "Q" 
-
     if not success:
         return False
 
     from_piece = board[from_row][from_col]
     board[from_row][from_col] = EMPTY_PIECE
     board[to_row][to_col] = from_piece
+
+    if board[to_row][to_col].lower() == "p" and to_row in (0, 7):  # Pawn promotion
+        board[to_row][to_col] = "q" if player_turn else "Q"
+        
     return True
 
 
-def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
+def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, include_king):
     from_piece = board[from_row][from_col]
     to_piece = board[to_row][to_col]
 
@@ -105,7 +106,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         return is_legal_knight(from_row, from_col, to_row, to_col)
     if from_piece.lower() == "b":  # Bishop
         return is_legal_bishop(board, from_row, from_col, to_row, to_col)
-    if from_piece.lower() == "k":  # King
+    if from_piece.lower() == "k" and include_king:  # King
         return is_legal_king(board, from_row, from_col, to_row, to_col, player_turn)
     if from_piece.lower() == "q":  # Queen
         return is_legal_queen(board, from_row, from_col, to_row, to_col)
@@ -117,7 +118,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn):
     direction = -1 if player_turn else 1
     start_row = 6 if player_turn else 1
 
-    if from_col == to_row:
+    if from_col == to_col:
         if to_row == from_row + direction and to_piece == EMPTY_PIECE:
             return True
         if from_row == start_row and to_row == from_row + 2 * direction:
@@ -188,7 +189,7 @@ def check_mate():
 def check_check(board, row, col, player_turn):
     for r in range(len(board)):
         for c in range(len(board[r])):
-            move_is_legal(board, player_turn, r, c, row, col)
+            move_is_legal(board, player_turn, r, c, row, col, False)
 
 
 while True:
