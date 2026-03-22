@@ -82,7 +82,7 @@ def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to
         return False  # moving diagonally
 
     if from_col != to_col:  # horizontal move
-        for piece in board[from_row][min(from_col, to   _col)+1 : max(from_col, to_col)]:
+        for piece in board[from_row][min(from_col, to_col)+1 : max(from_col, to_col)]:
             if piece != ".":
                 return False
 
