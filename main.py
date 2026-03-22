@@ -27,7 +27,7 @@ board = [
 player_turn = True  # True is white, False is black
 
 
-def display_board():
+def display_board(board):
     system('cls' if name == 'nt' else 'clear')  # Clear terminal
     print(f"+ {"- " * 8}+")
     for row in range(len(board)):
@@ -59,7 +59,7 @@ def get_move(player_turn):
     return True, from_row, from_col, to_row, to_col
 
 
-def move_piece():
+def move_piece(board):
     success, from_row, from_col, to_row, to_col = get_move(player_turn)
 
     if not success:
@@ -95,7 +95,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
 
     # Piece-specific legality tests
     if from_piece.lower() == "p":  # Pawn
-        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
+        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn)
 
     if from_piece.lower() == "r":  # Rook
         return is_legal_rook(from_row, from_col, to_row, to_col)
@@ -123,7 +123,7 @@ def is_white(piece):
     return piece.islower()
 
 
-def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
+def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn):
     direction = -1 if player_turn else 1
     steps = abs(from_row - to_row)
     same_col = (from_col == to_col)
@@ -204,8 +204,8 @@ def check_check(row, col):
 
 
 while True:
-    display_board()
-    if move_piece():
+    display_board(board)
+    if move_piece(board):
         check_mate()
         player_turn = not player_turn
     else:
