@@ -42,10 +42,10 @@ def move_piece():
         from_coords = [int(move[0])-1, int(move[1])-1]
         to_coords = [int(move[-2])-1, int(move[-1])-1]
     except (ValueError, IndexError):
-        print("Invalid notation! Format: 42 44")
+        input("Invalid notation! Format: 42 44")
         return None
     if not move_is_legal(from_coords, to_coords):
-        print("Illegal move!")
+        input("Illegal move!")
         return False
 
     from_row, from_col = from_coords
