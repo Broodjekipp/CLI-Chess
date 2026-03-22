@@ -59,6 +59,52 @@ def move_piece():
     return True
 
 
+def move_is_legal(board, player_turn, from_coords, to_coords):
+    from_row, from_col = from_coords
+    to_row, to_col = to_coords
+
+    from_piece = board[from_row][from_col]
+    to_piece = board[to_row][to_col]
+
+    if from_piece == ".":
+        return False
+
+    if from_coords == to_coords:
+        return False
+
+    # Move your own piece
+    if player_turn and not is_white(from_piece):
+        return False
+    if not player_turn and not is_black(from_piece):
+        return False
+
+    # Capture opponent's piece
+    if to_piece != "." and player_turn and is_white(to_piece):
+        return False
+    if to_piece != "." and not player_turn and is_black(to_piece):
+        return False
+
+    if from_piece.lower() == "p":  # Piece is a pawn
+        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
+
+    if from_piece.lower() == "r":  # Piece is a rook
+        return is_legal_rook(from_row, from_col, to_row, to_col)
+
+    if from_piece.lower() == "n":  # Piece is a knight
+        return is_legal_knight(from_row, from_col, to_row, to_col)
+
+    if from_piece.lower() == "b":  # Piece is a bishop
+        return is_legal_bishop(from_row, from_col, to_row, to_col)
+
+    if from_piece.lower() == "k":  # Piece is a king
+        return is_legal_king(from_row, from_col, to_row, to_col)
+
+    if from_piece.lower() == "q":  # Piece is a queen
+        return is_legal_queen(from_row, from_col, to_row, to_col)
+
+    return True
+
+
 def is_black(piece):
     return piece.isupper()
 
@@ -132,52 +178,6 @@ def is_legal_king(from_row, from_col, to_row, to_col):
 
 
 def is_legal_queen(from_row, from_col, to_row, to_col):
-    return True
-
-
-def move_is_legal(board, player_turn, from_coords, to_coords):
-    from_row, from_col = from_coords
-    to_row, to_col = to_coords
-
-    from_piece = board[from_row][from_col]
-    to_piece = board[to_row][to_col]
-
-    if from_piece == ".":
-        return False
-    
-    if from_coords == to_coords:
-        return False
-
-    # Move your own piece
-    if player_turn and not is_white(from_piece):
-        return False
-    if not player_turn and not is_black(from_piece):
-        return False
-
-    # Capture opponent's piece
-    if to_piece != "." and player_turn and is_white(to_piece):
-        return False
-    if to_piece != "." and not player_turn and is_black(to_piece):
-        return False
-
-    if from_piece.lower() == "p":  # Piece is a pawn
-        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
-
-    if from_piece.lower() == "r":  # Piece is a rook
-        return is_legal_rook(from_row, from_col, to_row, to_col)
-
-    if from_piece.lower() == "n":  # Piece is a knight
-        return is_legal_knight(from_row, from_col, to_row, to_col)
-
-    if from_piece.lower() == "b":  # Piece is a bishop
-        return is_legal_bishop(from_row, from_col, to_row, to_col)
-
-    if from_piece.lower() == "k":  # Piece is a king
-        return is_legal_king(from_row, from_col, to_row, to_col)
-
-    if from_piece.lower() == "q":  # Piece is a queen
-        return is_legal_queen(from_row, from_col, to_row, to_col)
-
     return True
 
 
