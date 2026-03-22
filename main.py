@@ -1,14 +1,14 @@
 """
 TODO:
 * Add bishop moving logic
-* Add queen moing logic
+* Add queen moving logic
 * Add check_mate
 * Add check_check
 """
 from copy import deepcopy
 from os import system, name
 
-start_board = [
+board = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
     ["P", "P", "P", "P", "P", "P", "P", "P"],
     [".", ".", ".", ".", ".", ".", ".", "."],
@@ -19,7 +19,6 @@ start_board = [
     ["r", "n", "b", "q", "k", "b", "n", "r"],
 ]
 
-board = deepcopy(start_board)
 player_turn = True  # True is white, False is black
 
 
@@ -144,6 +143,9 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
     to_piece = board[to_row][to_col]
 
     if from_piece == ".":
+        return False
+    
+    if from_coords == to_coords:
         return False
 
     # Move your own piece
