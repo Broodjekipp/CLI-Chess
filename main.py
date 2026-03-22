@@ -1,8 +1,6 @@
 """
 TODO:
-* Add bishop moving logic
 * Add check_mate
-* Add check_check
 * Add en passant
 board[king_row - 2:king_row + 3][king_col - 2:king_col + 3]
 """
@@ -201,28 +199,42 @@ def is_white(piece):
     return piece.islower()
 
 
-def check_mate():
-    pass
-
-
-def check_check(board, target_row, target_col, player_turn):
+def check_mate(board, player_turn):
     for r in range(len(board)):
         for c in range(len(board[r])):
-            if move_is_legal(board, not player_turn, r, c, target_row, target_col, False):
-                return True
+            if board[r][c].lower() == "k":
+                king_checked, attack_r, attack_c = check_check(board, r, c, player_turn)
+                if king_checked:
+                    if check_check(board, attack_r, attack_c, not player_turn):
+                        return False, None
+                    
+    return False, None
 
-    enemy_king = "K" if player_turn else "k"
+
+def check_check(board, target_row, target_col, player_piece):
+    for r in range(len(board)):
+        for c in range(len(board[r])):
+            if move_is_legal(board, not player_piece, r, c, target_row, target_col, False):
+                return True, r, c
+
+    enemy_king = "K" if player_piece else "k"
     subgrid = [r[target_col - 1:target_col + 2] for r in board[target_row - 1:target_row + 2]]
     if any(enemy_king in r for r in subgrid):
-        return True
+        return True, None, None
 
-    return False
+    return False, None, None
+
+
+def player_win(winner):
+    pass
 
 
 while True:
     display_board(board)
     if move_piece(board):
-        check_mate()
+        checkmate, winner = check_mate(board, player_turn)
+        if check_mate:
+            player_win(winner)
         player_turn = not player_turn
     else:
         continue
