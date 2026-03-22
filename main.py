@@ -1,3 +1,11 @@
+"""
+TODO:
+* Add bishop moving logic
+* Add queen moing logic
+* Add check_mate
+* Add check_check
+"""
+
 from copy import deepcopy
 
 start_board = [
