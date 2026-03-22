@@ -113,27 +113,27 @@ def move_is_legal(from_coords, to_coords):
         return False
 
     if from_piece.lower() == "p":  # Piece is a pawn
-        is_legal_pawn(from_coords, to_coords, from_row,
+        return is_legal_pawn(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "r":  # Piece is a rook
-        is_legal_rook(from_coords, to_coords, from_row,
+        return is_legal_rook(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "n":  # Piece is a knight
-        is_legal_knight(from_coords, to_coords, from_row,
+        return is_legal_knight(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "b":  # Piece is a bishop
-        is_legal_bishop(from_coords, to_coords, from_row,
+        return is_legal_bishop(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "k":  # Piece is a king
-        is_legal_king(from_coords, to_coords, from_row,
+        return is_legal_king(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "q":  # Piece is a queen
-        is_legal_queen(from_coords, to_coords, from_row,
+        return is_legal_queen(from_coords, to_coords, from_row,
                       from_col, to_row, to_col, to_piece)
 
     return True
