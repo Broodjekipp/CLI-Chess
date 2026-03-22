@@ -47,6 +47,9 @@ def get_move(player_turn):
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
         return False, None, None
+    if not from_row > 7 or not from_col > 7 or not to_row > 7 or not to_col > 7:
+        input("Invalid notation! Format: 42 44")
+        return False, None, None, None, None
     if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         input("Illegal move!")
         return False, None, None, None, None
@@ -56,13 +59,10 @@ def get_move(player_turn):
 
 def move_piece():
     success, from_row, from_col, to_row, to_col = get_move(player_turn)
+    
     if not success:
         return False
     
-    if not from_row > 7 or not from_col > 7 or not to_row > 7 or not to_col > 7:
-        input("Invalid notation! Format: 42 44")
-        return False
-
     from_piece = board[from_row][from_col]
     board[from_row][from_col] = EMPTY_PIECE
     board[to_row][to_col] = from_piece
