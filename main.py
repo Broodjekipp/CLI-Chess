@@ -7,7 +7,7 @@ TODO:
 * Add promotion choose menu
 * Add castling
 * Add standard chess notation
-* In king_can_escape check only for 8 squares around the king
+* In king_can_escape check only for 8 squares around the king instead of whole board
 * Move history
 * AI
 """
