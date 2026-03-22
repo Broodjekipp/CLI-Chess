@@ -60,6 +60,11 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             return True
         else:
             return False
+        
+    if player_turn and to_row >= from_row:  # white must move up
+        return False
+    if not player_turn and to_row <= from_row:  # black must move down
+        return False
 
     elif abs(from_row - to_row) == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
