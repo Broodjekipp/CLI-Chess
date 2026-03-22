@@ -5,8 +5,8 @@ TODO:
 * Add check_mate
 * Add check_check
 """
-
 from copy import deepcopy
+from os import system, name
 
 start_board = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
@@ -73,7 +73,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
     if player_turn and to_row >= from_row:  # white must move up
         return False
     if not player_turn and to_row <= from_row:  # black must move down
-        return False    
+        return False
 
     elif abs(from_row - to_row) == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
@@ -183,6 +183,10 @@ def check_mate():
 
 def check_check(row, col):
     return False
+
+
+def clear_screen():
+    system('cls' if name == 'nt' else 'clear')
 
 
 while True:
