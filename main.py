@@ -117,11 +117,11 @@ def is_legal_knight(from_row, from_col, to_row, to_col):
     return False
 
 
-def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
+def is_legal_bishop(from_row, from_col, to_row, to_col):
     return True
 
 
-def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
+def is_legal_king(from_row, from_col, to_row, to_col):
     if abs(from_row - to_row) > 1 or abs(from_col - to_col) > 1:
         return False
     if check_check(to_row, to_col):
@@ -129,7 +129,7 @@ def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
     return True
 
 
-def is_legal_queen(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
+def is_legal_queen(from_row, from_col, to_row, to_col):
     return True
 
 
@@ -165,15 +165,13 @@ def move_is_legal(board, player_turn, from_coords, to_coords):
         return is_legal_knight(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "b":  # Piece is a bishop
-        return is_legal_bishop(from_coords, to_coords, from_row,
-                               from_col, to_row, to_col, to_piece)
+        return is_legal_bishop(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "k":  # Piece is a king
-        return is_legal_king(from_row, from_col, to_row, to_col, to_piece)
+        return is_legal_king(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "q":  # Piece is a queen
-        return is_legal_queen(from_coords, to_coords, from_row,
-                              from_col, to_row, to_col, to_piece)
+        return is_legal_queen(from_row, from_col, to_row, to_col)
 
     return True
 
