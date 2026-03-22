@@ -77,7 +77,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
     return False
 
 
-def is_legal_rook(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
+def is_legal_rook(from_row, from_col, to_row, to_col):
     if from_col != to_col and from_row != to_row:
         return False  # moving diagonally
 
@@ -136,8 +136,7 @@ def move_is_legal(from_coords, to_coords):
         return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece)
 
     if from_piece.lower() == "r":  # Piece is a rook
-        return is_legal_rook(from_coords, to_coords, from_row,
-                             from_col, to_row, to_col, to_piece)
+        return is_legal_rook(from_row, from_col, to_row, to_col)
 
     if from_piece.lower() == "n":  # Piece is a knight
         return is_legal_knight(from_coords, to_coords, from_row,
