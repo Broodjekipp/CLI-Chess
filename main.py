@@ -108,7 +108,7 @@ def is_legal_knight(from_row, from_col, to_row, to_col):
 
 
 def is_legal_bishop(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
-    pass
+    return True
 
 
 def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
@@ -120,7 +120,7 @@ def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
 
 
 def is_legal_queen(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
-    pass
+    return True
 
 
 def move_is_legal(from_coords, to_coords):
