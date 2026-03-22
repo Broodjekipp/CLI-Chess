@@ -44,7 +44,7 @@ def move_piece():
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
         return None
-    if not move_is_legal(from_coords, to_coords):
+    if not move_is_legal(board, player_turn, from_coords, to_coords):
         input("Illegal move!")
         return False
 
@@ -133,7 +133,7 @@ def is_legal_queen(from_coords, to_coords, from_row, from_col, to_row, to_col, t
     return True
 
 
-def move_is_legal(from_coords, to_coords):
+def move_is_legal(board, player_turn, from_coords, to_coords):
     from_row, from_col = from_coords
     to_row, to_col = to_coords
 
