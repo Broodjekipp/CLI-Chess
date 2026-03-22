@@ -64,6 +64,13 @@ def move_is_legal(from_coords, to_coords):
         return False
     if not player_turn and not is_black(from_piece):
         return False    
+    
+    # Capture opponent's piece
+        if to_piece != "." and player_turn and is_white(to_piece):
+        return False
+    if to_piece != "." and not player_turn and is_black(to_piece):
+        return False
+
 
 
 def check_mate():
