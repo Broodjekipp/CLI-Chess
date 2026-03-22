@@ -114,17 +114,21 @@ def is_white(piece):
 
 
 def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
-    if from_col != to_col:  # Column changed
-        if to_piece != ".":
-            return True
-        else:
-            return False
-
     direction = -1 if player_turn else 1
+    steps = abs(from_row - to_row)
     if to_row != from_row + direction:
         return False
 
-    elif abs(from_row - to_row) == 2:  # Made 2 steps
+    elif steps == 1:  # Made 1 step
+        if from_col != to_col:  # Column changed
+            if to_piece != ".":
+                return True
+            else:
+                return False
+        if to_piece == ".":
+            return True
+
+    elif steps == 2:  # Made 2 steps
         if from_row == 1 and not player_turn:
             if board[from_row + 1][from_col] == ".":
                 return True
@@ -132,10 +136,9 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             if board[from_row - 1][from_col] == ".":
                 return True
         return False
-
-    elif abs(from_row - to_row) == 1:  # Made 1 step
-        if to_piece == ".":
-            return True
+    
+    elif steps > 2:
+        return False
 
     return False
 
