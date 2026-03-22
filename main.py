@@ -47,22 +47,21 @@ def get_move(player_turn):
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
         return False, None, None
-    if not from_row > 7 or not from_col > 7 or not to_row > 7 or not to_col > 7:
+    if not (0 <= from_row < 8 and 0 <= from_col < 8 and 0 <= to_row < 8 and 0 <= to_col < 8):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
     if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         input("Illegal move!")
         return False, None, None, None, None
     return True, from_row, from_col, to_row, to_col
-    
 
 
 def move_piece():
     success, from_row, from_col, to_row, to_col = get_move(player_turn)
-    
+
     if not success:
         return False
-    
+
     from_piece = board[from_row][from_col]
     board[from_row][from_col] = EMPTY_PIECE
     board[to_row][to_col] = from_piece
@@ -130,7 +129,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
         return False
 
     elif steps == 1:  # Made 1 step
-        if not same_col: 
+        if not same_col:
             if to_piece != EMPTY_PIECE:
                 return True
             else:
@@ -139,7 +138,7 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
             return True
 
     elif steps == 2:  # Made 2 steps
-        if not same_col: 
+        if not same_col:
             return False
         if from_row == 1 and not player_turn:
             if board[from_row + 1][from_col] == EMPTY_PIECE:
