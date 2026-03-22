@@ -46,13 +46,16 @@ def get_move(player_turn):
         to_row, to_col = [int(move[-2])-1, int(move[-1])-1]
     except (ValueError, IndexError):
         input("Invalid notation! Format: 42 44")
-        return False, None, None
+        return False, None, None, None, None
+    
     if not (0 <= from_row < 8 and 0 <= from_col < 8 and 0 <= to_row < 8 and 0 <= to_col < 8):
         input("Invalid notation! Format: 42 44")
         return False, None, None, None, None
+    
     if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
         input("Illegal move!")
         return False, None, None, None, None
+    
     return True, from_row, from_col, to_row, to_col
 
 
@@ -75,7 +78,7 @@ def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col):
     if from_piece == EMPTY_PIECE:
         return False
 
-    if [from_row, from_col] == [to_col, to_row]:
+    if [from_row, from_col] == [to_row, to_col]:
         return False
 
     # Move your own piece
@@ -127,26 +130,26 @@ def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece):
 
     if to_row != from_row + direction:
         return False
-
-    elif steps == 1:  # Made 1 step
-        if not same_col:
-            if to_piece != EMPTY_PIECE:
+        
+    if same_col:
+        if steps == 1:
+            if to_piece == EMPTY_PIECE:
                 return True
-            else:
-                return False
-        if to_piece == EMPTY_PIECE:
-            return True
 
-    elif steps == 2:  # Made 2 steps
-        if not same_col:
+        elif steps == 2:
+            if from_row == 1 and not player_turn:
+                if board[from_row + 1][from_col] == EMPTY_PIECE:
+                    return True
+            if from_row == 6 and player_turn:
+                if board[from_row - 1][from_col] == EMPTY_PIECE:
+                    return True
             return False
-        if from_row == 1 and not player_turn:
-            if board[from_row + 1][from_col] == EMPTY_PIECE:
-                return True
-        if from_row == 6 and player_turn:
-            if board[from_row - 1][from_col] == EMPTY_PIECE:
-                return True
-        return False
+    
+    else:
+        if to_piece != EMPTY_PIECE and steps == 1:
+            return True
+        else:
+            return False
 
     return False
 
