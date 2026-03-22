@@ -2,9 +2,9 @@
 TODO:
 * Add check_mate
 * Add en passant
-* Add choose menu
-* Castling
-board[king_row - 2:king_row + 3][king_col - 2:king_col + 3]
+* Add promotion choose menu
+* Add castling
+* Add standard chess notation
 """
 from os import system, name
 
@@ -192,7 +192,7 @@ def is_legal_bishop(board, from_row, from_col, to_row, to_col):
 def is_legal_king(board, from_row, from_col, to_row, to_col, player_turn):
     if abs(from_row - to_row) > 1 or abs(from_col - to_col) > 1:
         return False
-    if check_check(board, to_row, to_col, player_turn):
+    if check_check(board, to_row, to_col, player_turn)[0]:
         return False
 
     return True
@@ -232,16 +232,18 @@ def king_can_escape(board, r, c, player_turn):
 def check_mate(board, player_turn):
     for r, c in find_kings(board):  # Find the kings in the game
         king_is_white = is_white(board[r][c])
+        if king_is_white != player_turn:
+            continue
         king_checked, attacker_row, attacker_col = check_check(
             board, r, c, king_is_white)
 
         if not king_checked:
             continue
 
-        attacker_defended, *_ = check_check(board, attacker_row,
-                            attacker_col, not king_is_white)
-        if attacker_defended:
-            return False, None
+        if attacker_row is not None and attacker_col is not None:
+            attacker_defended, *_ = check_check(board, attacker_row, attacker_col, not king_is_white)
+            if attacker_defended:
+                return False, None
         
         if king_can_escape(board, r, c, player_turn):
             return False, None
@@ -273,7 +275,7 @@ while True:
     display_board(board)
     if move_piece(board):
         checkmate, winner = check_mate(board, player_turn)
-        if check_mate:
+        if checkmate:
             player_win(winner)
         player_turn = not player_turn
     else:
