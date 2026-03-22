@@ -108,8 +108,8 @@ def is_legal_king(from_row, from_col, to_row, to_col, to_piece):
     if not abs(from_col - to_col) == 1:
         return False
     if check_check(to_row, to_col):
-        return True
-    return False
+        return False
+    return True
 
 
 def is_legal_queen(from_coords, to_coords, from_row, from_col, to_row, to_col, to_piece):
