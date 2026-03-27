@@ -17,6 +17,28 @@ piece = SimpleNamespace(
     B_KING="K",
 )
 
+w_pieces = [
+    piece.W_ROOK,
+    piece.W_KNIGHT,
+    piece.W_BISHOP,
+    piece.W_QUEEN,
+    piece.W_KING,
+    piece.W_BISHOP,
+    piece.W_KNIGHT,
+    piece.W_ROOK,
+]
+
+b_pieces = [
+    piece.B_ROOK,
+    piece.B_KNIGHT,
+    piece.B_BISHOP,
+    piece.B_QUEEN,
+    piece.B_KING,
+    piece.B_BISHOP,
+    piece.B_KNIGHT,
+    piece.B_ROOK,
+]
+
 Move = namedtuple(
     "Move",
     ["from_row", "from_col", "to_row", "to_col"],
@@ -90,7 +112,22 @@ def get_move(white_turn):
     return True, move
 
 
-def validate_move(move, board):
+def validate_move(move, board, piece, white_turn, w_pieces, b_pieces):
+    from_piece = board[move.from_row][move.from_col]
+    to_piece = board[move.to_row][move.to_col]
+
+    if from_piece == piece.EMPTY:
+        return False
+
+    if [move.from_row, move.from_col] == [move.to_row, move.to_col]:
+        return False
+
+    # Move your own piece
+    if white_turn and from_piece not in w_pieces:
+        return False
+    elif not white_turn and from_piece not in b_pieces:
+        return False
+
     return True
 
 
@@ -138,7 +175,7 @@ while True:
     success, move = get_move(white_turn)
     if not success:
         continue
-    if validate_move(move, board):
+    if validate_move(move, board, piece, white_turn, w_pieces, b_pieces):
         make_move(
             move,
             rook_moved,
