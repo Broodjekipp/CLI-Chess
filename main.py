@@ -248,13 +248,15 @@ def check_mate(board, player_turn):
             continue
 
         if attacker_row is not None and attacker_col is not None:
-            attacker_defended, *_ = check_check(board, attacker_row, attacker_col, not king_is_white)
+            attacker_defended, * \
+                _ = check_check(board, attacker_row,
+                                attacker_col, not king_is_white)
             if attacker_defended:
                 return False, None
-        
+
         if king_can_escape(board, r, c, player_turn):
             return False, None
-        
+
         return True, king_is_white
     return False, None
 
