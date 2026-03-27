@@ -136,11 +136,11 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
         return False
 
     if from_piece in (piece.w_pawn, piece.b_pawn):
-        return validate_pawn(move, board)
+        return validate_pawn(move, board, white_turn, piece.EMPTY)
     if from_piece in (piece.w_rook, piece.b_rook):
         return validate_rook(move, board)
     if from_piece in (piece.w_knight, piece.b_knight):
-        return validate_knight(move, board)        
+        return validate_knight(move, board)
     if from_piece in (piece.w_bishop, piece.b_bishop):
         return validate_bishop(move, board)
     if from_piece in (piece.w_queen, piece.b_queen):
@@ -151,8 +151,25 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
     return True
 
 
-def validate_pawn(move, board):
-    return True
+def validate_pawn(move, board, white_turn, empty_piece):
+    start_row = 6 if white_turn else 1
+    direction = -1 if white_turn else 1
+
+    if move.from_col == move.to_col and board[move.to_row][move.to_col] != empty_piece:
+        if move.to_row == move.from_row + direction:
+            return True
+        if move.from_row == start_row and move.to_row == move.from_row + 2 * direction:
+            return True
+
+    # Capture a piece
+    elif (
+        abs(move.from_col - move.to_col) == 1
+        and move.to_row == move.from_row + direction
+    ):
+        if move.to_piece != empty_piece:
+            return True
+
+    return False
 
 
 def validate_rook(move, board):
