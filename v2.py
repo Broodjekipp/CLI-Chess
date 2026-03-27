@@ -17,8 +17,22 @@ piece = SimpleNamespace(
     B_KING="K",
 )
 
-white_pieces = {piece.W_ROOK, piece.W_KNIGHT, piece.W_BISHOP, piece.W_QUEEN, piece.W_KING, piece.W_PAWN}
-black_pieces = {piece.B_ROOK, piece.B_KNIGHT, piece.B_BISHOP, piece.B_QUEEN, piece.B_KING, piece.B_PAWN}
+white_pieces = {
+    piece.W_ROOK,
+    piece.W_KNIGHT,
+    piece.W_BISHOP,
+    piece.W_QUEEN,
+    piece.W_KING,
+    piece.W_PAWN,
+}
+black_pieces = {
+    piece.B_ROOK,
+    piece.B_KNIGHT,
+    piece.B_BISHOP,
+    piece.B_QUEEN,
+    piece.B_KING,
+    piece.B_PAWN,
+}
 
 Move = namedtuple(
     "Move",
@@ -96,6 +110,10 @@ def get_move(white_turn):
 def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
     from_piece = board[move.from_row][move.from_col]
     to_piece = board[move.to_row][move.to_col]
+    to_is_white = to_piece in white_pieces
+    to_is_black = to_piece in black_pieces
+    from_is_white = from_piece in white_pieces
+    from_is_black = from_piece in black_pieces
 
     if from_piece == piece.EMPTY:
         return False
@@ -108,9 +126,48 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
         return False
     elif not white_turn and from_piece not in black_pieces:
         return False
-    
+
+    if check_castling(rook_moved, board, white_turn):
+        pass
+
+    if to_piece != piece.EMPTY and white_turn and to_is_white:
+        return False
+    if to_piece != piece.EMPTY and not white_turn and to_is_black:
+        return False
+
+    if from_piece in (piece.w_pawn, piece.b_pawn):
+        return validate_pawn(move, board)
+    if from_piece in (piece.w_rook, piece.b_rook):
+        return validate_rook(move, board)
+    if from_piece in (piece.w_knight, piece.b_knight):
+        return validate_knight(move, board)
+    if from_piece in (piece.w_king, piece.b_king):
+        return validate_king(move, board)
+
+    return True
 
 
+def validate_pawn(move, board):
+    return True
+
+
+def validate_rook(move, board):
+    return True
+
+
+def validate_knight(move, board):
+    return True
+
+
+def validate_bishop(move, board):
+    return True
+
+
+def validate_queen(move, board):
+    return True
+
+
+def validate_king(move, board):
     return True
 
 
