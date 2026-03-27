@@ -102,7 +102,6 @@ def get_move(white_turn):
             to_col=LETTERS_TO_NUMBERS[move_str[-2]],
         )
     except (ValueError, IndexError):
-        input("Invalid format! Correct format: e7 e5. Press ENTER...")
         return False, None
     return True, move
 
@@ -135,17 +134,17 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
     if to_piece != piece.EMPTY and not white_turn and to_is_black:
         return False
 
-    if from_piece in (piece.w_pawn, piece.b_pawn):
+    if from_piece in (piece.W_PAWN, piece.B_PAWN):
         return validate_pawn(move, board, white_turn, piece.EMPTY)
-    if from_piece in (piece.w_rook, piece.b_rook):
+    if from_piece in (piece.W_ROOK, piece.B_ROOK):
         return validate_rook(move, board)
-    if from_piece in (piece.w_knight, piece.b_knight):
+    if from_piece in (piece.W_KNIGHT, piece.B_KNIGHT):
         return validate_knight(move, board)
-    if from_piece in (piece.w_bishop, piece.b_bishop):
+    if from_piece in (piece.W_BISHOP, piece.B_BISHOP):
         return validate_bishop(move, board)
-    if from_piece in (piece.w_queen, piece.b_queen):
+    if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
         return validate_queen(move, board)
-    if from_piece in (piece.w_king, piece.b_king):
+    if from_piece in (piece.W_KING, piece.B_KING):
         return validate_king(move, board)
 
     return True
@@ -235,6 +234,7 @@ while True:
     display_board(board)
     success, move = get_move(white_turn)
     if not success:
+        input("Invalid format! Correct format: e7 e5. Press ENTER...")
         continue
     if validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
         make_move(
@@ -244,5 +244,8 @@ while True:
             white_turn,
             piece.EMPTY,
         )
+    else:
+        input("Illegal move! Press ENTER...")
+        continue
     check_mate()
     white_turn = not white_turn
