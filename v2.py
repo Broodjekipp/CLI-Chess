@@ -121,9 +121,9 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
         return False
 
     # Move your own piece
-    if white_turn and from_piece not in white_pieces:
+    if white_turn and not from_is_white:
         return False
-    elif not white_turn and from_piece not in black_pieces:
+    elif not white_turn and not from_is_black:
         return False
 
     if check_castling(rook_moved, board, white_turn):
@@ -154,7 +154,7 @@ def validate_pawn(move, board, white_turn, empty_piece):
     start_row = 6 if white_turn else 1
     direction = -1 if white_turn else 1
 
-    if move.from_col == move.to_col and board[move.to_row][move.to_col] != empty_piece:
+    if move.from_col == move.to_col and board[move.to_row][move.to_col] == empty_piece:
         if move.to_row == move.from_row + direction:
             return True
         if move.from_row == start_row and move.to_row == move.from_row + 2 * direction:
