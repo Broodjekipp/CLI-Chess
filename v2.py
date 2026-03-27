@@ -140,7 +140,11 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
     if from_piece in (piece.w_rook, piece.b_rook):
         return validate_rook(move, board)
     if from_piece in (piece.w_knight, piece.b_knight):
-        return validate_knight(move, board)
+        return validate_knight(move, board)        
+    if from_piece in (piece.w_bishop, piece.b_bishop):
+        return validate_bishop(move, board)
+    if from_piece in (piece.w_queen, piece.b_queen):
+        return validate_queen(move, board)
     if from_piece in (piece.w_king, piece.b_king):
         return validate_king(move, board)
 
