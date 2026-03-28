@@ -5,7 +5,6 @@ TODO:
   * Pawn promotion choose menu
 * En passant
 * Add standard chess notation
-* Move history
 * Stalemate
 """
 
@@ -126,6 +125,23 @@ def get_move(white_turn):
     except (ValueError, IndexError, KeyError):
         return False, None
     return True, move
+
+
+def get_promotion_piece(white_turn):
+    piece_str = input("Piece to promote pawn to: ").lower().strip().replace(" ", "")
+
+    if piece_str[0] == "q" or piece_str == "":
+        return piece.W_QUEEN if white_turn else piece.B_QUEEN
+    if piece_str[0] == "p":
+        return piece.W_PAWN if white_turn else piece.B_PAWN
+    if piece_str[0] in ("n", "k") or piece_str == "knight":
+        return piece.W_KNIGHT if white_turn else piece.B_KNIGHT
+    if piece_str[0] == "r":
+        return piece.W_ROOK if white_turn else piece.B_ROOK
+    if piece_str[0] == "b":
+        return piece.W_BISHOP if white_turn else piece.B_BISHOP
+
+    return None
 
 
 def validate_move(
@@ -265,6 +281,7 @@ def make_move(
     board,
     white_turn,
     empty_piece,
+    is_test=False,
 ):
     # Check for castling
     if check_castling(
@@ -272,10 +289,27 @@ def make_move(
         board,
         white_turn,
     ):
-        # Move the king and correct rook
         pass
+
     board[move.to_row][move.to_col] = board[move.from_row][move.from_col]
     board[move.from_row][move.from_col] = empty_piece
+
+    # Check pawn promotion
+    end = 0 if white_turn else 7
+    if (
+        not is_test
+        and move.to_row == end
+        and board[move.from_row][move.from_col]
+        in (
+            piece.W_PAWN,
+            piece.B_PAWN,
+        )
+    ):
+        piece_to_promote = get_promotion_piece(white_turn)
+        while not piece_to_promote:
+            print("Invalid piece! Pieces: Q, R, K, B")
+            piece_to_promote = get_promotion_piece(white_turn)
+        board[move.to_row][move.to_col] = piece_to_promote
 
 
 def test_move(
@@ -378,6 +412,7 @@ while True:
             board,
             white_turn,
             piece.EMPTY,
+            True
         )
     else:
         input("Illegal move! Press ENTER...")
