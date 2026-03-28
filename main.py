@@ -1,291 +1,388 @@
 """
 TODO:
-* In check_mate 
-    * Add a "simulated move" for better accuracy
-    * Add blocking
-* Add castling
-* Add en passant
-* Add promotion choose menu
+* Castling
+* Pawn promotion
+ * Pawn promotion choose menu
+* En passant
 * Add standard chess notation
-* In king_can_escape check only for 8 squares around the king instead of whole board
 * Move history
-* AI
+* Stalemate
 """
-from os import system, name
 
-EMPTY_PIECE = "-"
-LETTER_TO_INDEX = {
-    "a": 0,
-    "b": 1,
-    "c": 2,
-    "d": 3,
-    "e": 4,
-    "f": 5,
-    "g": 6,
-    "h": 7,
+from collections import namedtuple
+from types import SimpleNamespace
+from enum import Enum
+
+# For users with light mode, black and white pawns should be swapped
+piece = SimpleNamespace(
+    EMPTY="·",
+    B_PAWN="♙",
+    B_ROOK="♖",
+    B_KNIGHT="♘",
+    B_BISHOP="♗",
+    B_QUEEN="♕",
+    B_KING="♔",
+    W_PAWN="♟",
+    W_ROOK="♜",
+    W_KNIGHT="♞",
+    W_BISHOP="♝",
+    W_QUEEN="♛",
+    W_KING="♚",
+)
+
+white_pieces = {
+    piece.W_ROOK,
+    piece.W_KNIGHT,
+    piece.W_BISHOP,
+    piece.W_QUEEN,
+    piece.W_KING,
+    piece.W_PAWN,
+}
+black_pieces = {
+    piece.B_ROOK,
+    piece.B_KNIGHT,
+    piece.B_BISHOP,
+    piece.B_QUEEN,
+    piece.B_KING,
+    piece.B_PAWN,
 }
 
+Move = namedtuple(
+    "Move",
+    ["from_row", "from_col", "to_row", "to_col"],
+)
+
+rook_moved = {
+    "w_rook_l": False,
+    "w_rook_r": False,
+    "b_rook_l": False,
+    "b_rook_r": False,
+}
+
+LETTERS_TO_NUMBERS = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
+
 board = [
-    ["R", "N", "B", "Q", "K", "B", "N", "R"],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
-        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
-        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
-        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    [EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE,
-        EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE, EMPTY_PIECE],
-    ["p", "p", "p", "p", "p", "p", "p", "p"],
-    ["r", "n", "b", "q", "k", "b", "n", "r"],
+    [
+        piece.B_ROOK,
+        piece.B_KNIGHT,
+        piece.B_BISHOP,
+        piece.B_QUEEN,
+        piece.B_KING,
+        piece.B_BISHOP,
+        piece.B_KNIGHT,
+        piece.B_ROOK,
+    ],
+    [piece.B_PAWN] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.W_PAWN] * 8,
+    [
+        piece.W_ROOK,
+        piece.W_KNIGHT,
+        piece.W_BISHOP,
+        piece.W_QUEEN,
+        piece.W_KING,
+        piece.W_BISHOP,
+        piece.W_KNIGHT,
+        piece.W_ROOK,
+    ],
 ]
 
-player_turn = True  # True is white, False is black
+white_turn = True
+
+
+def is_white(p):
+    return p in white_pieces
+
+
+def is_black(p):
+    return p in black_pieces
 
 
 def display_board(board):
-    system('cls' if name == 'nt' else 'clear')  # Clear terminal
-    print(f"+-{"-" * 16}+")
+    print("╔═══════════════╗")
     for row in range(len(board)):
-        print("| ", end="")
+        print("║", end="")
         for col in range(len(board[row])):
-            print(board[row][col], end=" ")
-        print(f"|{8 - row}")
-    print(f"+-{"-" * 16}+")
-    print(f"  {" ".join(str(i) for i in LETTER_TO_INDEX)}")
+            print(board[row][col], end="│" if col != 7 else "")
+        print("║ " + str(8 - row))
+    print("╚═══════════════╝")
+    print(" A B C D E F G H ")
 
 
-def get_move(player_turn):
-    move = input(
-        f"{"White" if player_turn else "Black"}'s turn: ").lower().strip()
-    if move == "exit":
-        exit()
+def get_move(white_turn):
+    player = "White" if white_turn else "Black"
+    move_str = input(f"{player}'s turn: ").lower().strip().replace(" ", "")
     try:
-        from_col, from_row = [LETTER_TO_INDEX[move[0]], 8 - int(move[1])]
-        to_col, to_row = [LETTER_TO_INDEX[move[-2]], 8 - int(move[-1])]
+        move = Move(
+            from_row=8 - int(move_str[1]),
+            from_col=LETTERS_TO_NUMBERS[move_str[0]],
+            to_row=8 - int(move_str[-1]),
+            to_col=LETTERS_TO_NUMBERS[move_str[-2]],
+        )
     except (ValueError, IndexError, KeyError):
-        input("Invalid notation!")
-        return False, None, None, None, None
-
-    if not (0 <= from_row < 8 and 0 <= from_col < 8 and 0 <= to_row < 8 and 0 <= to_col < 8):
-        input("Invalid notation!")
-        return False, None, None, None, None
-
-    if not move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, True):
-        input("Illegal move!")
-        return False, None, None, None, None
-
-    return True, from_row, from_col, to_row, to_col
+        return False, None
+    return True, move
 
 
-def move_piece(board):
-    success, from_row, from_col, to_row, to_col = get_move(player_turn)
+def validate_move(
+    move,
+    board,
+    white_turn,
+    white_pieces,
+    black_pieces,
+    rook_moved,
+    check_for_check=True,
+):
+    from_piece = board[move.from_row][move.from_col]
+    to_piece = board[move.to_row][move.to_col]
+    valid = False
 
-    if not success:
+    if from_piece == piece.EMPTY:
         return False
 
-    from_piece = board[from_row][from_col]
-    board[from_row][from_col] = EMPTY_PIECE
-    board[to_row][to_col] = from_piece
-
-    if board[to_row][to_col].lower() == "p" and to_row in (0, 7):  # Pawn promotion
-        board[to_row][to_col] = "q" if player_turn else "Q"
-
-    return True
-
-
-def move_is_legal(board, player_turn, from_row, from_col, to_row, to_col, include_king):
-    from_piece = board[from_row][from_col]
-    to_piece = board[to_row][to_col]
-
-    if from_piece == EMPTY_PIECE:
-        return False
-
-    if [from_row, from_col] == [to_row, to_col]:
+    if [move.from_row, move.from_col] == [move.to_row, move.to_col]:
         return False
 
     # Move your own piece
-    if player_turn and not is_white(from_piece):
+    my_pieces = white_pieces if white_turn else black_pieces
+    if from_piece not in my_pieces:
         return False
-    if not player_turn and not is_black(from_piece):
-        return False
-
-    # Capture opponent's piece - to be changed for castling
-    if to_piece != EMPTY_PIECE and player_turn and is_white(to_piece):
-        return False
-    if to_piece != EMPTY_PIECE and not player_turn and is_black(to_piece):
+    if to_piece in my_pieces:
         return False
 
-    # Piece-specific legality tests
-    if from_piece.lower() == "p":  # Pawn
-        return is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn, board)
-    if from_piece.lower() == "r":  # Rook
-        return is_legal_rook(board, from_row, from_col, to_row, to_col)
-    if from_piece.lower() == "n":  # Knight
-        return is_legal_knight(from_row, from_col, to_row, to_col)
-    if from_piece.lower() == "b":  # Bishop
-        return is_legal_bishop(board, from_row, from_col, to_row, to_col)
-    if from_piece.lower() == "k" and include_king:  # King
-        return is_legal_king(board, from_row, from_col, to_row, to_col, player_turn)
-    if from_piece.lower() == "q":  # Queen
-        return is_legal_queen(board, from_row, from_col, to_row, to_col)
+    if from_piece in (piece.W_PAWN, piece.B_PAWN):
+        valid = validate_pawn(move, board, white_turn, to_piece)
+    if from_piece in (piece.W_ROOK, piece.B_ROOK):
+        valid = validate_rook(move, board)
+    if from_piece in (piece.W_KNIGHT, piece.B_KNIGHT):
+        valid = validate_knight(move)
+    if from_piece in (piece.W_BISHOP, piece.B_BISHOP):
+        valid = validate_bishop(move, board)
+    if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
+        valid = validate_queen(move, board)
+    if from_piece in (piece.W_KING, piece.B_KING):
+        valid = validate_king(move, board)
+
+    if valid:
+        if check_for_check:
+            if test_move(move, rook_moved, board, white_turn):
+                return True
+        else:
+            return True  # skip the check test when already inside one
 
     return False
 
 
-def is_legal_pawn(from_row, from_col, to_row, to_col, to_piece, player_turn, board):
-    direction = -1 if player_turn else 1
-    start_row = 6 if player_turn else 1
+def validate_pawn(move, board, white_turn, to_piece):
+    start_row = 6 if white_turn else 1
+    direction = -1 if white_turn else 1
 
-    if from_col == to_col:
-        if to_row == from_row + direction and to_piece == EMPTY_PIECE:
+    # Move forwards
+    if move.from_col == move.to_col and board[move.to_row][move.to_col] == piece.EMPTY:
+        if move.to_row == move.from_row + direction:
             return True
-        if from_row == start_row and to_row == from_row + 2 * direction:
-            if to_piece == EMPTY_PIECE and board[from_row + direction][from_col] == EMPTY_PIECE:
+        if move.from_row == start_row and move.to_row == move.from_row + 2 * direction:
+            middle_row = move.from_row + direction
+            if board[middle_row][move.from_col] == piece.EMPTY:
                 return True
 
-    elif abs(from_col - to_col) == 1 and to_row == from_row + direction:
-        if to_piece != EMPTY_PIECE:
+    # Capture a piece
+    elif (
+        abs(move.from_col - move.to_col) == 1
+        and move.to_row == move.from_row + direction
+    ):
+        if to_piece != piece.EMPTY:
             return True
 
     return False
 
 
-def is_legal_rook(board, from_row, from_col, to_row, to_col):
-    if from_col != to_col and from_row != to_row:
-        return False  # moving diagonally
+def validate_rook(move, board):
+    if move.from_col != move.to_col and move.from_row != move.to_row:
+        return False
 
-    if from_col != to_col:  # horizontal move
-        for piece in board[from_row][min(from_col, to_col)+1: max(from_col, to_col)]:
-            if piece != EMPTY_PIECE:
+    if move.from_col != move.to_col:  # horizontal move
+        step = 1 if move.from_col < move.to_col else -1
+        for col in range(move.from_col + step, move.to_col, step):
+            if board[move.from_row][col] != piece.EMPTY:
                 return False
-
-    if from_row != to_row:  # vertical move
-        for r in range(min(from_row, to_row)+1, max(from_row, to_row)):
-            if board[r][from_col] != EMPTY_PIECE:
+    else:  # vertical move
+        step = 1 if move.from_row < move.to_row else -1
+        for row in range(move.from_row + step, move.to_row, step):
+            if board[row][move.from_col] != piece.EMPTY:
                 return False
 
     return True
 
 
-def is_legal_knight(from_row, from_col, to_row, to_col):
-    row_diff = abs(from_row - to_row)
-    col_diff = abs(from_col - to_col)
-    if (row_diff == 2 and col_diff == 1) or (row_diff == 1 and col_diff == 2):
+def validate_knight(move):
+    if abs(move.from_row - move.to_row) == 2:
+        if abs(move.from_col - move.to_col) == 1:
+            return True
+    elif abs(move.from_row - move.to_row) == 1:
+        if abs(move.from_col - move.to_col) == 2:
+            return True
+    return False
+
+
+def validate_bishop(move, board):
+    if abs(move.from_row - move.to_row) != abs(move.from_col - move.to_col):
+        return False
+
+    row_direction = 1 if move.from_row < move.to_row else -1
+    col_direction = 1 if move.from_col < move.to_col else -1
+
+    row = move.from_row + row_direction
+    col = move.from_col + col_direction
+    while row != move.to_row:
+        if board[row][col] != piece.EMPTY:
+            return False
+        row += row_direction
+        col += col_direction
+
+    return True
+
+
+def validate_queen(move, board):
+    if validate_bishop(move, board) or validate_rook(move, board):
         return True
     return False
 
 
-def is_legal_bishop(board, from_row, from_col, to_row, to_col):
-    row_diff = abs(from_row - to_row)
-    col_diff = abs(from_col - to_col)
-
-    if row_diff != col_diff:
-        return False
-
-    row_step = 1 if to_row > from_row else -1
-    col_step = 1 if to_col > from_col else -1
-
-    r, c = from_row + row_step, from_col + col_step
-    while (r, c) != (to_row, to_col):
-        if board[r][c] != EMPTY_PIECE:
-            return False
-        r += row_step
-        c += col_step
-
-    return True
+def validate_king(move, board):
+    if max(abs(move.from_col - move.to_col), abs(move.from_row - move.to_row)) == 1:
+        return True
+    return False
 
 
-def is_legal_king(board, from_row, from_col, to_row, to_col, player_turn):
-    if abs(from_row - to_row) > 1 or abs(from_col - to_col) > 1:
-        return False
-    if check_check(board, to_row, to_col, player_turn)[0]:
-        return False
-
-    return True
-
-
-def is_legal_queen(board, from_row, from_col, to_row, to_col):
-    return (is_legal_rook(board, from_row, from_col, to_row, to_col) or
-            is_legal_bishop(board, from_row, from_col, to_row, to_col))
-
-
-def is_black(piece):
-    return piece.isupper()
-
-
-def is_white(piece):
-    return piece.islower()
+def make_move(
+    move,
+    rook_moved,
+    board,
+    white_turn,
+    empty_piece,
+):
+    # Check for castling
+    if check_castling(
+        rook_moved,
+        board,
+        white_turn,
+    ):
+        # Move the king and correct rook
+        pass
+    board[move.to_row][move.to_col] = board[move.from_row][move.from_col]
+    board[move.from_row][move.from_col] = empty_piece
 
 
-def find_kings(board):
-    return [
-        (r, c)
-        for r in range(len(board))
-        for c in range(len(board[r]))
-        if board[r][c].lower() == "k"
-    ]
+def test_move(
+    move,
+    rook_moved,
+    board,
+    white_turn,
+):
+    test_board = [row[:] for row in board]
 
-
-def king_can_escape(board, r, c, player_turn):
-    return any(
-        not check_check(board, to_r, to_c, player_turn)[0]
-        for to_r in range(len(board))
-        for to_c in range(len(board[to_r]))
-        if is_legal_king(board, r, c, to_r, to_c, player_turn)
+    make_move(
+        move,
+        rook_moved,
+        test_board,
+        white_turn,
+        piece.EMPTY,
     )
 
+    king_row, king_col = find_piece(
+        test_board, piece.W_KING if white_turn else piece.B_KING
+    )
 
-def check_mate(board, player_turn):
-    for r, c in find_kings(board):
-        king_is_white = is_white(board[r][c])
-        if king_is_white != player_turn:
-            continue
-        king_checked, attacker_row, attacker_col = check_check(
-            board, r, c, king_is_white)
+    if check_check(test_board, [king_row, king_col], rook_moved)[0]:
+        return False
 
-        if not king_checked:
-            continue
+    return True
 
-        if attacker_row is not None and attacker_col is not None:
-            attacker_defended, * \
-                _ = check_check(board, attacker_row,
-                                attacker_col, not king_is_white)
-            if attacker_defended:
-                return False, None
 
-        if king_can_escape(board, r, c, player_turn):
-            return False, None
+def find_piece(board, piece_to_find):
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            if board[row][col] == piece_to_find:
+                return row, col
+    return None, None
 
-        return True, king_is_white
+
+def check_castling(
+    rook_moved,
+    board,
+    white_turn,
+):
+    return False
+
+
+def check_check(board, target, rook_moved):
+
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            move_to_check = Move(
+                from_row=row,
+                from_col=col,
+                to_row=target[0],
+                to_col=target[1],
+            )
+            if validate_move(
+                move_to_check,
+                board,
+                is_black(board[target[0]][target[1]]),
+                white_pieces,
+                black_pieces,
+                rook_moved,
+                check_for_check=False,
+            ):
+                return True, [row, col]
     return False, None
 
 
-def check_check(board, target_row, target_col, player_piece):
-    for r in range(len(board)):
-        for c in range(len(board[r])):
-            if move_is_legal(board, not player_piece, r, c, target_row, target_col, False):
-                return True, r, c
+def check_mate(board, white_turn, rook_moved):
+    king = piece.W_KING if white_turn else piece.B_KING
+    king_row, king_col = find_piece(board, king)
 
-    enemy_king = "K" if player_piece else "k"
-    subgrid = [r[target_col - 1:target_col + 2]
-               for r in board[target_row - 1:target_row + 2]]
-    if any(enemy_king in r for r in subgrid):
-        return True, None, None
+    checked, _ = check_check(board, [king_row, king_col], rook_moved)
+    if not checked:
+        return False
 
-    return False, None, None
+    # Try every possible move
+    for from_row in range(8):
+        for from_col in range(8):
+            for to_row in range(8):
+                for to_col in range(8):
+                    move = Move(from_row, from_col, to_row, to_col)
+                    if validate_move(
+                        move, board, white_turn, white_pieces, black_pieces, rook_moved
+                    ):
+                        return False  # Found an escape
 
-
-def player_win(winner):
-    input(f"{"White" if winner else "Black"} won the match!")
+    return True  # Found no escape
 
 
 while True:
     display_board(board)
-    if move_piece(board):
-        checkmate, winner = check_mate(board, player_turn)
-        if checkmate:
-            player_win(winner)
-        player_turn = not player_turn
-    else:
+    success, move = get_move(white_turn)
+    if not success:
+        input("Invalid format! Correct format: e7 e5. Press ENTER...")
         continue
+    if validate_move(move, board, white_turn, white_pieces, black_pieces, rook_moved):
+        make_move(
+            move,
+            rook_moved,
+            board,
+            white_turn,
+            piece.EMPTY,
+        )
+    else:
+        input("Illegal move! Press ENTER...")
+        continue
+    white_turn = not white_turn
+    if check_mate(board, white_turn, rook_moved):
+        winner = "Black" if white_turn else "White"
+        print(f"Checkmate! {winner} wins!")
+        break
