@@ -101,7 +101,7 @@ def get_move(white_turn):
             to_row=8 - int(move_str[-1]),
             to_col=LETTERS_TO_NUMBERS[move_str[-2]],
         )
-    except (ValueError, IndexError):
+    except (ValueError, IndexError, KeyError):
         return False, None
     return True, move
 
@@ -135,11 +135,11 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
         return False
 
     if from_piece in (piece.W_PAWN, piece.B_PAWN):
-        return validate_pawn(move, board, white_turn, piece.EMPTY)
+        return validate_pawn(move, board, white_turn, piece.EMPTY, to_piece)
     if from_piece in (piece.W_ROOK, piece.B_ROOK):
-        return validate_rook(move, board)
+        return validate_rook(move, board, piece)
     if from_piece in (piece.W_KNIGHT, piece.B_KNIGHT):
-        return validate_knight(move, board)
+        return validate_knight(move)
     if from_piece in (piece.W_BISHOP, piece.B_BISHOP):
         return validate_bishop(move, board)
     if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
@@ -150,10 +150,11 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces):
     return True
 
 
-def validate_pawn(move, board, white_turn, empty_piece):
+def validate_pawn(move, board, white_turn, empty_piece, to_piece):
     start_row = 6 if white_turn else 1
     direction = -1 if white_turn else 1
 
+    # Move forwards
     if move.from_col == move.to_col and board[move.to_row][move.to_col] == empty_piece:
         if move.to_row == move.from_row + direction:
             return True
@@ -165,21 +166,40 @@ def validate_pawn(move, board, white_turn, empty_piece):
         abs(move.from_col - move.to_col) == 1
         and move.to_row == move.from_row + direction
     ):
-        if move.to_piece != empty_piece:
+        if to_piece != empty_piece:
             return True
 
     return False
 
 
-def validate_rook(move, board):
+def validate_rook(move, board, piece):
+    if not move.from_col == move.to_col and not move.from_row == move.to_row:
+        return False
+    if not move.from_col == move.to_col:
+        for col in range(move.from_col, move.to_col):
+            if board[move.from_row][col] != piece.EMPTY:
+                return False
+    elif not move.from_row == move.to_row:
+        for row in range(move.from_row, move.to_row):
+            if board[row][move.from_col] != piece.EMPTY:
+                return False
     return True
 
 
-def validate_knight(move, board):
-    return True
+def validate_knight(move):
+    if abs(move.from_row - move.to_row) == 2:
+        if abs(move.from_col - move.to_col) == 1:
+            return True
+    elif abs(move.from_row - move.to_row) == 1:
+        if abs(move.from_col - move.to_col) == 2:
+            return True
+    return False
 
 
 def validate_bishop(move, board):
+    if abs(move.from_row - move.to_row) != abs(move.from_col - move.to_row):
+        return False
+
     return True
 
 
@@ -210,6 +230,25 @@ def make_move(
     board[move.from_row][move.from_col] = empty_piece
 
 
+def test_move(
+    move,
+    rook_moved,
+    board,
+    white_turn,
+    empty_piece="-",
+):
+    make_move(
+        move,
+        rook_moved,
+        board,
+        white_turn,
+        empty_piece="-",
+    )
+    if check_check(board, white_turn):
+        return False
+    return True
+
+
 def check_castling(
     rook_moved,
     board,
@@ -218,7 +257,7 @@ def check_castling(
     return False
 
 
-def check_check():
+def check_check(board, white_turn):
     pass
 
 
