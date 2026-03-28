@@ -148,9 +148,9 @@ def validate_move(
 
     # Move your own piece
     my_pieces = white_pieces if white_turn else black_pieces
-    if from_piece not in my_pieces: 
+    if from_piece not in my_pieces:
         return False
-    if to_piece in my_pieces: 
+    if to_piece in my_pieces:
         return False
 
     if from_piece in (piece.W_PAWN, piece.B_PAWN):
@@ -380,9 +380,9 @@ while True:
         )
     else:
         input("Illegal move! Press ENTER...")
-        continue   
+        continue
     white_turn = not white_turn
-    if check_mate(board, white_turn, rook_moved):  
+    if check_mate(board, white_turn, rook_moved):
         winner = "Black" if white_turn else "White"
         print(f"Checkmate! {winner} wins!")
-        break 
+        break
