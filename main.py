@@ -1,9 +1,10 @@
 """
 TODO:
-* Castling
 * En passant
 * Add standard chess notation
 * Stalemate
+  * Draw by repetition
+  * 50 moves w/out check
 """
 
 from collections import namedtuple
@@ -70,7 +71,16 @@ board = [
         piece.EMPTY,
         piece.B_KING,
     ],
-    [piece.EMPTY] * 8,
+    [
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.W_PAWN,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+    ],
     [piece.EMPTY] * 8,
     [piece.EMPTY] * 8,
     [piece.EMPTY] * 8,
@@ -159,16 +169,19 @@ def get_move(white_turn):
 def get_promotion_piece(white_turn):
     piece_str = input("Piece to promote pawn to: ").lower().strip().replace(" ", "")
 
-    if piece_str[0] == "q" or piece_str == "":
+    try:
+        if piece_str[0] == "q":
+            return piece.W_QUEEN if white_turn else piece.B_QUEEN
+        if piece_str[0] == "p":
+            return piece.W_PAWN if white_turn else piece.B_PAWN
+        if piece_str[0] in ("n", "k") or piece_str == "knight":
+            return piece.W_KNIGHT if white_turn else piece.B_KNIGHT
+        if piece_str[0] == "r":
+            return piece.W_ROOK if white_turn else piece.B_ROOK
+        if piece_str[0] == "b":
+            return piece.W_BISHOP if white_turn else piece.B_BISHOP
+    except IndexError:
         return piece.W_QUEEN if white_turn else piece.B_QUEEN
-    if piece_str[0] == "p":
-        return piece.W_PAWN if white_turn else piece.B_PAWN
-    if piece_str[0] in ("n", "k") or piece_str == "knight":
-        return piece.W_KNIGHT if white_turn else piece.B_KNIGHT
-    if piece_str[0] == "r":
-        return piece.W_ROOK if white_turn else piece.B_ROOK
-    if piece_str[0] == "b":
-        return piece.W_BISHOP if white_turn else piece.B_BISHOP
 
     return None
 
@@ -349,29 +362,29 @@ def make_move(
     if white_turn:
         if from_piece == piece.W_KING:
             castling_moved["w_king"] = True
-        if from_piece == piece.W_ROOK and move.from_col == 7:
-            if move.from_row == 0:
+        if from_piece == piece.W_ROOK:
+            if move.from_row == 7 and move.from_col == 0:
                 castling_moved["w_rook_l"] = True
-            if move.from_row == 7:
+            elif move.from_row == 7 and move.from_col == 7:
                 castling_moved["w_rook_r"] = True
     else:
         if from_piece == piece.B_KING:
             castling_moved["b_king"] = True
-        if from_piece == piece.B_ROOK and move.from_col == 0:
-            if move.from_row == 0:
+        if from_piece == piece.B_ROOK:
+            if move.from_row == 7 and move.from_col == 0:
                 castling_moved["b_rook_l"] = True
-            if move.from_row == 7:
+            elif move.from_row == 7 and move.from_col == 7:
                 castling_moved["b_rook_r"] = True
 
     board[move.to_row][move.to_col] = board[move.from_row][move.from_col]
     board[move.from_row][move.from_col] = empty_piece
 
     if castling:
-        rook_row = move.to_row  # same row as king
-        if move.to_col == 2:  # queenside
+        rook_row = move.to_row  # Same row as king
+        if move.to_col == 2:  # Queenside
             board[rook_row][3] = board[rook_row][0]
             board[rook_row][0] = piece.EMPTY
-        elif move.to_col == 6:  # kingside
+        elif move.to_col == 6:  # Kingside
             board[rook_row][5] = board[rook_row][7]
             board[rook_row][7] = piece.EMPTY
 
@@ -386,10 +399,11 @@ def make_move(
             piece.B_PAWN,
         )
     ):
-        piece_to_promote = get_promotion_piece(white_turn)
-        while not piece_to_promote:
-            print("Invalid piece! Pieces: Q, R, K, B")
+        while True:
             piece_to_promote = get_promotion_piece(white_turn)
+            if piece_to_promote:
+                break
+            print("Invalid piece! Pieces: Q, R, K, B")
         board[move.to_row][move.to_col] = piece_to_promote
 
 
@@ -401,13 +415,7 @@ def test_move(
 ):
     test_board = [row[:] for row in board]
 
-    make_move(
-        move,
-        rook_moved,
-        test_board,
-        white_turn,
-        piece.EMPTY,
-    )
+    make_move(move, rook_moved, test_board, white_turn, piece.EMPTY, is_test=True)
 
     king_row, king_col = find_piece(
         test_board, piece.W_KING if white_turn else piece.B_KING
@@ -483,7 +491,7 @@ while True:
     )
     if validation:
         make_move(
-            move, castling_moved, board, white_turn, piece.EMPTY, True, validation
+            move, castling_moved, board, white_turn, piece.EMPTY, False, validation
         )
     else:
         input("Illegal move! Press ENTER...")
