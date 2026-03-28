@@ -1,6 +1,19 @@
+"""
+TODO:
+* Castling
+* Pawn promotion
+ * Pawn promotion choose menu
+* En passant
+* Add standard chess notation
+* Move history
+* Stalemate
+"""
+
 from collections import namedtuple
 from types import SimpleNamespace
+from enum import Enum
 
+# For users with light mode, black and white pawns should be swapped
 piece = SimpleNamespace(
     EMPTY="·",
     B_PAWN="♙",
@@ -134,14 +147,10 @@ def validate_move(
         return False
 
     # Move your own piece
-    if white_turn and not is_white(from_piece):
+    my_pieces = white_pieces if white_turn else black_pieces
+    if from_piece not in my_pieces: 
         return False
-    elif not white_turn and not is_black(from_piece):
-        return False
-
-    if to_piece != piece.EMPTY and white_turn and is_white(to_piece):
-        return False
-    if to_piece != piece.EMPTY and not white_turn and is_black(to_piece):
+    if to_piece in my_pieces: 
         return False
 
     if from_piece in (piece.W_PAWN, piece.B_PAWN):
@@ -254,7 +263,7 @@ def make_move(
     rook_moved,
     board,
     white_turn,
-    empty_piece="-",
+    empty_piece,
 ):
     # Check for castling
     if check_castling(
@@ -288,7 +297,7 @@ def test_move(
         test_board, piece.W_KING if white_turn else piece.B_KING
     )
 
-    if check_check(test_board, white_turn, [king_row, king_col], rook_moved):
+    if check_check(test_board, [king_row, king_col], rook_moved)[0]:
         return False
 
     return True
@@ -310,7 +319,8 @@ def check_castling(
     return False
 
 
-def check_check(board, white_turn, target, rook_moved):
+def check_check(board, target, rook_moved):
+
     for row in range(len(board)):
         for col in range(len(board[row])):
             move_to_check = Move(
@@ -322,22 +332,36 @@ def check_check(board, white_turn, target, rook_moved):
             if validate_move(
                 move_to_check,
                 board,
-                not white_turn,
+                is_black(board[target[0]][target[1]]),
                 white_pieces,
                 black_pieces,
                 rook_moved,
                 check_for_check=False,
             ):
-                return True
-    return False
+                return True, [row, col]
+    return False, None
 
 
-def check_mate():
-    pass
+def check_mate(board, white_turn, rook_moved):
+    king = piece.W_KING if white_turn else piece.B_KING
+    king_row, king_col = find_piece(board, king)
 
+    checked, _ = check_check(board, [king_row, king_col], rook_moved)
+    if not checked:
+        return False
 
-def win(player):
-    pass
+    # Try every possible move
+    for from_row in range(8):
+        for from_col in range(8):
+            for to_row in range(8):
+                for to_col in range(8):
+                    move = Move(from_row, from_col, to_row, to_col)
+                    if validate_move(
+                        move, board, white_turn, white_pieces, black_pieces, rook_moved
+                    ):
+                        return False  # Found an escape
+
+    return True  # Found no escape
 
 
 while True:
@@ -356,6 +380,9 @@ while True:
         )
     else:
         input("Illegal move! Press ENTER...")
-        continue
-    check_mate()
+        continue   
     white_turn = not white_turn
+    if check_mate(board, white_turn, rook_moved):  
+        winner = "Black" if white_turn else "White"
+        print(f"Checkmate! {winner} wins!")
+        break 
