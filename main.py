@@ -1,8 +1,6 @@
 """
 TODO:
 * Castling
-* Pawn promotion
-  * Pawn promotion choose menu
 * En passant
 * Add standard chess notation
 * Stalemate
@@ -51,16 +49,47 @@ Move = namedtuple(
     ["from_row", "from_col", "to_row", "to_col"],
 )
 
-rook_moved = {
+castling_moved = {
     "w_rook_l": False,
     "w_rook_r": False,
+    "w_king": False,
     "b_rook_l": False,
     "b_rook_r": False,
+    "b_king": False,
 }
 
 LETTERS_TO_NUMBERS = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
-
 board = [
+    [
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.B_KING,
+    ],
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [piece.EMPTY] * 8,
+    [
+        piece.W_ROOK,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.W_KING,
+        piece.EMPTY,
+        piece.EMPTY,
+        piece.W_ROOK,
+    ],
+]
+
+
+"""board = [
     [
         piece.B_ROOK,
         piece.B_KNIGHT,
@@ -87,7 +116,7 @@ board = [
         piece.W_KNIGHT,
         piece.W_ROOK,
     ],
-]
+]"""
 
 white_turn = True
 
@@ -156,12 +185,42 @@ def validate_move(
     from_piece = board[move.from_row][move.from_col]
     to_piece = board[move.to_row][move.to_col]
     valid = False
+    castling = 1  # 1 for not castling, 2 for castling so the function only has to return 1 value
 
     if from_piece == piece.EMPTY:
         return False
 
     if [move.from_row, move.from_col] == [move.to_row, move.to_col]:
         return False
+
+    # Castling
+    CASTLING_PARAMS = {
+        True: (piece.W_KING, 7, "w_king", "w_rook_l", "w_rook_r"),
+        False: (piece.B_KING, 0, "b_king", "b_rook_l", "b_rook_r"),
+    }
+
+    king_piece, king_row, king_key, rook_l_key, rook_r_key = CASTLING_PARAMS[white_turn]
+
+    if check_for_check:
+        if (
+            from_piece == king_piece
+            and move.to_row == king_row  # king stays on its row
+            and not castling_moved[king_key]
+        ):
+            squares_empty = lambda *cols: all(
+                board[king_row][c] == piece.EMPTY for c in cols
+            )
+            square_safe = lambda col: not check_check(
+                board, [king_row, col], castling_moved.copy()
+            )[0]
+
+            if move.to_col == 2 and not castling_moved[rook_l_key]:
+                if squares_empty(1, 2, 3) and square_safe(2) and square_safe(3):
+                    castling = 2
+
+            elif move.to_col == 6 and not castling_moved[rook_r_key]:
+                if squares_empty(5, 6) and square_safe(5) and square_safe(6):
+                    castling = 2
 
     # Move your own piece
     my_pieces = white_pieces if white_turn else black_pieces
@@ -181,14 +240,14 @@ def validate_move(
     if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
         valid = validate_queen(move, board)
     if from_piece in (piece.W_KING, piece.B_KING):
-        valid = validate_king(move, board)
+        valid = validate_king(move, board) or castling == 2
 
     if valid:
         if check_for_check:
             if test_move(move, rook_moved, board, white_turn):
-                return True
+                return castling
         else:
-            return True  # skip the check test when already inside one
+            return castling  # skip the check test when already inside one
 
     return False
 
@@ -277,29 +336,51 @@ def validate_king(move, board):
 
 def make_move(
     move,
-    rook_moved,
+    castling_moved,
     board,
     white_turn,
     empty_piece,
     is_test=False,
+    castling=False,
 ):
-    # Check for castling
-    if check_castling(
-        rook_moved,
-        board,
-        white_turn,
-    ):
-        pass
+    from_piece = board[move.from_row][move.from_col]
+
+    # Check if king or rook is moved
+    if white_turn:
+        if from_piece == piece.W_KING:
+            castling_moved["w_king"] = True
+        if from_piece == piece.W_ROOK and move.from_col == 7:
+            if move.from_row == 0:
+                castling_moved["w_rook_l"] = True
+            if move.from_row == 7:
+                castling_moved["w_rook_r"] = True
+    else:
+        if from_piece == piece.B_KING:
+            castling_moved["b_king"] = True
+        if from_piece == piece.B_ROOK and move.from_col == 0:
+            if move.from_row == 0:
+                castling_moved["b_rook_l"] = True
+            if move.from_row == 7:
+                castling_moved["b_rook_r"] = True
 
     board[move.to_row][move.to_col] = board[move.from_row][move.from_col]
     board[move.from_row][move.from_col] = empty_piece
+
+    if castling:
+        rook_row = move.to_row  # same row as king
+        if move.to_col == 2:  # queenside
+            board[rook_row][3] = board[rook_row][0]
+            board[rook_row][0] = piece.EMPTY
+        elif move.to_col == 6:  # kingside
+            board[rook_row][5] = board[rook_row][7]
+            board[rook_row][7] = piece.EMPTY
 
     # Check pawn promotion
     end = 0 if white_turn else 7
     if (
         not is_test
         and move.to_row == end
-        and board[move.from_row][move.from_col]
+        and board[move.to_row][move.to_col]
         in (
             piece.W_PAWN,
             piece.B_PAWN,
@@ -332,7 +413,7 @@ def test_move(
         test_board, piece.W_KING if white_turn else piece.B_KING
     )
 
-    if check_check(test_board, [king_row, king_col], rook_moved)[0]:
+    if check_check(test_board, [king_row, king_col], rook_moved.copy())[0]:
         return False
 
     return True
@@ -344,14 +425,6 @@ def find_piece(board, piece_to_find):
             if board[row][col] == piece_to_find:
                 return row, col
     return None, None
-
-
-def check_castling(
-    rook_moved,
-    board,
-    white_turn,
-):
-    return False
 
 
 def check_check(board, target, rook_moved):
@@ -381,7 +454,7 @@ def check_mate(board, white_turn, rook_moved):
     king = piece.W_KING if white_turn else piece.B_KING
     king_row, king_col = find_piece(board, king)
 
-    checked, _ = check_check(board, [king_row, king_col], rook_moved)
+    checked, _ = check_check(board, [king_row, king_col], rook_moved.copy())
     if not checked:
         return False
 
@@ -405,20 +478,18 @@ while True:
     if not success:
         input("Invalid format! Correct format: e7 e5. Press ENTER...")
         continue
-    if validate_move(move, board, white_turn, white_pieces, black_pieces, rook_moved):
+    validation = validate_move(
+        move, board, white_turn, white_pieces, black_pieces, castling_moved
+    )
+    if validation:
         make_move(
-            move,
-            rook_moved,
-            board,
-            white_turn,
-            piece.EMPTY,
-            True
+            move, castling_moved, board, white_turn, piece.EMPTY, True, validation
         )
     else:
         input("Illegal move! Press ENTER...")
         continue
     white_turn = not white_turn
-    if check_mate(board, white_turn, rook_moved):
+    if check_mate(board, white_turn, castling_moved):
         winner = "Black" if white_turn else "White"
         print(f"Checkmate! {winner} wins!")
         break
