@@ -11,7 +11,7 @@ TODO:
 
 from collections import namedtuple
 from types import SimpleNamespace
-from enum import Enum
+import os
 
 # For users with light mode, black and white pawns should be swapped
 piece = SimpleNamespace(
@@ -102,6 +102,7 @@ def is_black(p):
 
 
 def display_board(board):
+    os.system("cls" if os.name == "nt" else "clear")
     print("╔═══════════════╗")
     for row in range(len(board)):
         print("║", end="")
@@ -114,7 +115,7 @@ def display_board(board):
 
 def get_move(white_turn):
     player = "White" if white_turn else "Black"
-    move_str = input(f"{player}'s turn: ").lower().strip().replace(" ", "")
+    move_str = input(f"\n{player}'s turn: ").lower().strip().replace(" ", "")
     try:
         move = Move(
             from_row=8 - int(move_str[1]),
