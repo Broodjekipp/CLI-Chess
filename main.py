@@ -2,7 +2,7 @@
 TODO:
 * Castling
 * Pawn promotion
- * Pawn promotion choose menu
+  * Pawn promotion choose menu
 * En passant
 * Add standard chess notation
 * Move history
