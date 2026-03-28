@@ -39,8 +39,12 @@ Move = namedtuple(
     ["from_row", "from_col", "to_row", "to_col"],
 )
 
-Rook_moved = namedtuple("Rook_moved", ["w_rook_l", "w_rook_r", "b_rook_l", "b_rook_r"])
-rook_moved = Rook_moved(w_rook_l=False, w_rook_r=False, b_rook_l=False, b_rook_r=False)
+rook_moved = {
+    "w_rook_l": False,
+    "w_rook_r": False,
+    "b_rook_l": False,
+    "b_rook_r": False,
+}
 
 LETTERS_TO_NUMBERS = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
@@ -74,6 +78,14 @@ board = [
 ]
 
 white_turn = True
+
+
+def is_white(p):
+    return p in white_pieces
+
+
+def is_black(p):
+    return p in black_pieces
 
 
 def display_board(board):
@@ -113,10 +125,6 @@ def validate_move(
 ):
     from_piece = board[move.from_row][move.from_col]
     to_piece = board[move.to_row][move.to_col]
-    to_is_white = to_piece in white_pieces
-    to_is_black = to_piece in black_pieces
-    from_is_white = from_piece in white_pieces
-    from_is_black = from_piece in black_pieces
     valid = False
 
     if from_piece == piece.EMPTY:
@@ -126,14 +134,14 @@ def validate_move(
         return False
 
     # Move your own piece
-    if white_turn and not from_is_white:
+    if white_turn and not is_white(from_piece):
         return False
-    elif not white_turn and not from_is_black:
+    elif not white_turn and not is_black(from_piece):
         return False
 
-    if to_piece != piece.EMPTY and white_turn and to_is_white:
+    if to_piece != piece.EMPTY and white_turn and is_white(to_piece):
         return False
-    if to_piece != piece.EMPTY and not white_turn and to_is_black:
+    if to_piece != piece.EMPTY and not white_turn and is_black(to_piece):
         return False
 
     if from_piece in (piece.W_PAWN, piece.B_PAWN):
@@ -236,7 +244,7 @@ def validate_queen(move, board):
 
 
 def validate_king(move, board):
-    if abs(move.from_col - move.to_col) == 1 and abs(move.from_row - move.to_row) == 1:
+    if max(abs(move.from_col - move.to_col), abs(move.from_row - move.to_row)) == 1:
         return True
     return False
 
