@@ -2,19 +2,19 @@ from collections import namedtuple
 from types import SimpleNamespace
 
 piece = SimpleNamespace(
-    EMPTY="-",
-    W_PAWN="p",
-    W_ROOK="r",
-    W_KNIGHT="n",
-    W_BISHOP="b",
-    W_QUEEN="q",
-    W_KING="k",
-    B_PAWN="P",
-    B_ROOK="R",
-    B_KNIGHT="N",
-    B_BISHOP="B",
-    B_QUEEN="Q",
-    B_KING="K",
+    EMPTY="·",
+    B_PAWN="♙",
+    B_ROOK="♖",
+    B_KNIGHT="♘",
+    B_BISHOP="♗",
+    B_QUEEN="♕",
+    B_KING="♔",
+    W_PAWN="♟",
+    W_ROOK="♜",
+    W_KNIGHT="♞",
+    W_BISHOP="♝",
+    W_QUEEN="♛",
+    W_KING="♚",
 )
 
 white_pieces = {
@@ -89,13 +89,13 @@ def is_black(p):
 
 
 def display_board(board):
-    print("+---------------+")
+    print("╔═══════════════╗")
     for row in range(len(board)):
-        print("|", end="")
+        print("║", end="")
         for col in range(len(board[row])):
-            print(board[row][col], end="|" if col != 7 else "")
-        print("| " + str(8 - row))
-    print("+---------------+")
+            print(board[row][col], end="│" if col != 7 else "")
+        print("║ " + str(8 - row))
+    print("╚═══════════════╝")
     print(" A B C D E F G H ")
 
 
