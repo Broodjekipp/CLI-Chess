@@ -88,12 +88,8 @@ def display_board(board):
 
 
 def get_move(white_turn):
-    move_str = (
-        input(f"{"White" if white_turn else "Black"}'s turn: ")
-        .lower()
-        .strip()
-        .replace(" ", "")
-    )
+    player = "White" if white_turn else "Black"
+    move_str = input(f"{player}'s turn: ").lower().strip().replace(" ", "")
     try:
         move = Move(
             from_row=8 - int(move_str[1]),
@@ -109,7 +105,6 @@ def get_move(white_turn):
 def validate_move(
     move,
     board,
-    piece,
     white_turn,
     white_pieces,
     black_pieces,
@@ -142,51 +137,53 @@ def validate_move(
         return False
 
     if from_piece in (piece.W_PAWN, piece.B_PAWN):
-        valid = validate_pawn(move, board, white_turn, piece.EMPTY, to_piece)
+        valid = validate_pawn(move, board, white_turn, to_piece)
     if from_piece in (piece.W_ROOK, piece.B_ROOK):
-        valid = validate_rook(move, board, piece)
+        valid = validate_rook(move, board)
     if from_piece in (piece.W_KNIGHT, piece.B_KNIGHT):
         valid = validate_knight(move)
     if from_piece in (piece.W_BISHOP, piece.B_BISHOP):
-        valid = validate_bishop(move, board, piece)
+        valid = validate_bishop(move, board)
     if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
-        valid = validate_queen(move, board, piece)
+        valid = validate_queen(move, board)
     if from_piece in (piece.W_KING, piece.B_KING):
-        valid = validate_king(move, board, piece)
+        valid = validate_king(move, board)
 
     if valid:
-        if check_for_check:                      
-            if test_move(move, rook_moved, board, white_turn, piece):
+        if check_for_check:
+            if test_move(move, rook_moved, board, white_turn):
                 return True
         else:
-            return True   # skip the check test when already inside one
+            return True  # skip the check test when already inside one
 
     return False
 
 
-def validate_pawn(move, board, white_turn, empty_piece, to_piece):
+def validate_pawn(move, board, white_turn, to_piece):
     start_row = 6 if white_turn else 1
     direction = -1 if white_turn else 1
 
     # Move forwards
-    if move.from_col == move.to_col and board[move.to_row][move.to_col] == empty_piece:
+    if move.from_col == move.to_col and board[move.to_row][move.to_col] == piece.EMPTY:
         if move.to_row == move.from_row + direction:
             return True
         if move.from_row == start_row and move.to_row == move.from_row + 2 * direction:
-            return True
+            middle_row = move.from_row + direction
+            if board[middle_row][move.from_col] == piece.EMPTY:
+                return True
 
     # Capture a piece
     elif (
         abs(move.from_col - move.to_col) == 1
         and move.to_row == move.from_row + direction
     ):
-        if to_piece != empty_piece:
+        if to_piece != piece.EMPTY:
             return True
 
     return False
 
 
-def validate_rook(move, board, piece):
+def validate_rook(move, board):
     if move.from_col != move.to_col and move.from_row != move.to_row:
         return False
 
@@ -214,15 +211,15 @@ def validate_knight(move):
     return False
 
 
-def validate_bishop(move, board, piece):
+def validate_bishop(move, board):
     if abs(move.from_row - move.to_row) != abs(move.from_col - move.to_col):
         return False
 
     row_direction = 1 if move.from_row < move.to_row else -1
     col_direction = 1 if move.from_col < move.to_col else -1
 
-    row = move.from_row
-    col = move.from_col
+    row = move.from_row + row_direction
+    col = move.from_col + col_direction
     while row != move.to_row:
         if board[row][col] != piece.EMPTY:
             return False
@@ -232,15 +229,16 @@ def validate_bishop(move, board, piece):
     return True
 
 
-def validate_queen(move, board, piece):
-    if validate_bishop(move, board, piece) or validate_rook(move, board, piece):
+def validate_queen(move, board):
+    if validate_bishop(move, board) or validate_rook(move, board):
         return True
     return False
 
 
-def validate_king(move, board, piece):
+def validate_king(move, board):
     if abs(move.from_col - move.to_col) == 1 and abs(move.from_row - move.to_row) == 1:
         return True
+    return False
 
 
 def make_move(
@@ -267,7 +265,6 @@ def test_move(
     rook_moved,
     board,
     white_turn,
-    piece,
 ):
     test_board = [row[:] for row in board]
 
@@ -283,16 +280,16 @@ def test_move(
         test_board, piece.W_KING if white_turn else piece.B_KING
     )
 
-    if check_check(test_board, white_turn, piece, [king_row, king_col], rook_moved):
+    if check_check(test_board, white_turn, [king_row, king_col], rook_moved):
         return False
 
     return True
 
 
-def find_piece(board, piece):
+def find_piece(board, piece_to_find):
     for row in range(len(board)):
         for col in range(len(board[row])):
-            if board[row][col] == piece:
+            if board[row][col] == piece_to_find:
                 return row, col
     return None, None
 
@@ -305,7 +302,7 @@ def check_castling(
     return False
 
 
-def check_check(board, white_turn, piece, target, rook_moved):
+def check_check(board, white_turn, target, rook_moved):
     for row in range(len(board)):
         for col in range(len(board[row])):
             move_to_check = Move(
@@ -315,13 +312,17 @@ def check_check(board, white_turn, piece, target, rook_moved):
                 to_col=target[1],
             )
             if validate_move(
-                move_to_check, board, piece,
+                move_to_check,
+                board,
                 not white_turn,
-                white_pieces, black_pieces, rook_moved,
-                check_for_check=False   
+                white_pieces,
+                black_pieces,
+                rook_moved,
+                check_for_check=False,
             ):
                 return True
     return False
+
 
 def check_mate():
     pass
@@ -337,9 +338,7 @@ while True:
     if not success:
         input("Invalid format! Correct format: e7 e5. Press ENTER...")
         continue
-    if validate_move(
-        move, board, piece, white_turn, white_pieces, black_pieces, rook_moved
-    ):
+    if validate_move(move, board, white_turn, white_pieces, black_pieces, rook_moved):
         make_move(
             move,
             rook_moved,
