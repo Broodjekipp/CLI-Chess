@@ -11,7 +11,7 @@ TODO:
 
 from collections import namedtuple
 from types import SimpleNamespace
-import os
+from os import system, name
 
 # For users with light mode, black and white pawns should be swapped
 piece = SimpleNamespace(
@@ -102,7 +102,7 @@ def is_black(p):
 
 
 def display_board(board):
-    os.system("cls" if os.name == "nt" else "clear")
+    system("cls" if name == "nt" else "clear")
     print("╔═══════════════╗")
     for row in range(len(board)):
         print("║", end="")
