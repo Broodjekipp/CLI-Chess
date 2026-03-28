@@ -141,11 +141,11 @@ def validate_move(move, board, piece, white_turn, white_pieces, black_pieces, ro
     if from_piece in (piece.W_KNIGHT, piece.B_KNIGHT):
         valid = validate_knight(move)
     if from_piece in (piece.W_BISHOP, piece.B_BISHOP):
-        valid = validate_bishop(move, board)
+        valid = validate_bishop(move, board, piece)
     if from_piece in (piece.W_QUEEN, piece.B_QUEEN):
-        valid = validate_queen(move, board)
+        valid = validate_queen(move, board, piece)
     if from_piece in (piece.W_KING, piece.B_KING):
-        valid, castling = validate_king(move, board)
+        valid, castling = validate_king(move, board, piece)
     
     if valid:
         if test_move(move, rook_moved, board, white_turn, piece.EMPTY):
@@ -200,18 +200,31 @@ def validate_knight(move):
     return False
 
 
-def validate_bishop(move, board):
+def validate_bishop(move, board, piece):
     if abs(move.from_row - move.to_row) != abs(move.from_col - move.to_row):
         return False
+    
+    row_direction = 1 if move.from_row < move.to_row else -1
+    col_direction = 1 if move.from_col < move.to_col else -1
+
+    row = move.from_row
+    col = move.from_col
+    while row != move.to_row:
+        if board[row][col] != piece.EMPTY:
+            return False
+        row += row_direction
+        col += col_direction
 
     return True
 
 
-def validate_queen(move, board):
-    return True
+def validate_queen(move, board, piece):
+    if validate_bishop(move, board, piece) or validate_rook(move, board, piece):
+        return True
+    return False
 
 
-def validate_king(move, board):
+def validate_king(move, board, piece):
     if check_castling(rook_moved, board, white_turn):
         pass
     return True, False
