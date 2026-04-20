@@ -60,46 +60,8 @@ castling_moved = {
 }
 
 LETTERS_TO_NUMBERS = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
+
 board = [
-    [
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.B_KING,
-    ],
-    [
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.W_PAWN,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-    ],
-    [piece.EMPTY] * 8,
-    [piece.EMPTY] * 8,
-    [piece.EMPTY] * 8,
-    [piece.EMPTY] * 8,
-    [piece.EMPTY] * 8,
-    [
-        piece.W_ROOK,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.W_KING,
-        piece.EMPTY,
-        piece.EMPTY,
-        piece.W_ROOK,
-    ],
-]
-
-
-"""board = [
     [
         piece.B_ROOK,
         piece.B_KNIGHT,
@@ -126,7 +88,7 @@ board = [
         piece.W_KNIGHT,
         piece.W_ROOK,
     ],
-]"""
+]
 
 white_turn = True
 
@@ -153,7 +115,7 @@ def display_board(board):
 
 def get_move(white_turn):
     player = "White" if white_turn else "Black"
-    move_str = input(f"\n{player}'s turn: ").lower().strip().replace(" ", "")
+    move_str = input(f"\n{player}'s turn: ").strip().replace(" ", "")
     try:
         move = Move(
             from_row=8 - int(move_str[1]),
@@ -164,6 +126,33 @@ def get_move(white_turn):
     except (ValueError, IndexError, KeyError):
         return False, None
     return True, move
+
+
+def parse_chess_notation(move_str):
+    if not move_str:
+        return False
+
+    if move_str in ("o-o", "O-O", "0-0"):  # kingside castling
+        pass  
+    elif move_str in ("o-o-o", "O-O-O", "0-0-0"):  # queenside castling
+        pass 
+    elif not move_str[0].isupper():  # Piece is a pawn
+        pass
+
+    match move_str[0]:
+        case "Q":
+            pass
+        case "K":
+            pass
+        case "B":
+            pass
+        case "R":
+            pass
+        case "N":
+            pass
+        case "P":
+            pass
+    
 
 
 def get_promotion_piece(white_turn):
